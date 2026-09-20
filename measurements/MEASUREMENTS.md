@@ -47,7 +47,7 @@ The live checker uses only public seed queries and a clearly fictional teaching 
 
 The [final default-input browser run](../tests/live_final_artifacts/live_ui_check.json) passed six checks with five real recall requests and no JavaScript errors, including the default preflight example and a 390-pixel mobile view. One desktop request visibly reported 14.1 ms retrieval, 14.7 ms API and 267.0 ms browser round trip. That is one browser observation, not the HTTP-client table or a browser latency distribution.
 
-The [real recording](../demo/demo_recording.json) contains five API responses: lead recall, different preflight stage, memory off, fictional teaching and a paraphrase that retrieves the newly indexed ID. The [response evidence](../demo/demo_api_evidence.json) preserves that distinction. The video is silent and captioned, 93.0 seconds at 1440 x 1000; [playback verification](../demo/video_validation.json) decoded the actual file at five asserted timestamps without recompression or retiming. See [submission links](../SUBMISSION_READY.md).
+The [real recording](../demo/demo_recording.json) contains five API responses: lead recall, different preflight stage, memory off, fictional teaching and a paraphrase that retrieves the newly indexed ID. The [response evidence](../demo/demo_api_evidence.json) preserves that distinction. The original WebM is silent and captioned, 93.0 seconds at 1440 x 1000; [playback verification](../demo/video_validation.json) decoded the actual file at five asserted timestamps without recompression or retiming. The later narrated MP4 adds synthesized spoken explanation; original recording measurements and response evidence remain unchanged. See [submission links](../SUBMISSION_READY.md).
 
 ## Limits
 

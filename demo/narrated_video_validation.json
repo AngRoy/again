@@ -1,0 +1,55 @@
+{
+  "status": "passed",
+  "checked_utc": "2026-09-20T18:25:42.067602+00:00",
+  "file": "again-demo-narrated.mp4",
+  "bytes": 4502598,
+  "sha256": "00cf537fe6fd0b97e344ed030b36e088cb3e6a20bea7bb25f9d330bedb165225",
+  "metadata": {
+    "duration_s": 93,
+    "width": 1440,
+    "height": 1000,
+    "error": null
+  },
+  "decoded_seek_checks": [
+    {
+      "current_time_s": 5,
+      "ready_state": 4,
+      "error": null
+    },
+    {
+      "current_time_s": 25,
+      "ready_state": 4,
+      "error": null
+    },
+    {
+      "current_time_s": 55,
+      "ready_state": 4,
+      "error": null
+    },
+    {
+      "current_time_s": 78,
+      "ready_state": 4,
+      "error": null
+    },
+    {
+      "current_time_s": 90,
+      "ready_state": 4,
+      "error": null
+    }
+  ],
+  "audio_playback": {
+    "audio_tracks": [
+      {
+        "kind": "audio",
+        "enabled": true,
+        "ready_state": "live"
+      }
+    ],
+    "decoded_audio_bytes": 382838,
+    "decoded_video_bytes": 1035250,
+    "current_time_s": 5.703065,
+    "paused": false,
+    "error": null
+  },
+  "scope": "Actual completed MP4 loaded into Chrome from a full local Blob; exact five seek positions, moving playback, live audio track and decoded audio bytes verified. Audio levels are a separate FFmpeg check. No external calls or footage changes."
+}

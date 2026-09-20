@@ -1,10 +1,10 @@
-# Again - 90-second demo and submission
+# Again - narrated demo and submission
 
-The [finished 93-second video](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo.webm) is a silent captioned recording of the real deployed app. [Repository video](https://github.com/AngRoy/again/blob/main/demo/again-demo.webm) / [raw download](https://raw.githubusercontent.com/AngRoy/again/main/demo/again-demo.webm). Playback and five decoded timestamps passed. The optional narration below follows the actual interaction sequence; the supplied WebM contains no spoken audio.
+The [narrated MP4](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo-narrated.mp4) adds a friendly spoken walkthrough to the real deployed-app recording. The [original silent 93-second WebM](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo.webm) remains available with its original playback evidence. The voice is synthesized; the demonstrated app interactions and their outcomes are the original genuine browser recording.
 
 ## What the live recording shows
 
-The main recording is a silent, captioned walkthrough of genuine public-browser requests. It has no spoken audio, mocked results, edited latency, or playback retiming. The planned interaction timeline is 90 seconds; the actual media duration is 93.0 seconds, verified from the WebM. [Playback evidence](demo/video_validation.json).
+The original recording is a captioned walkthrough of genuine public-browser requests, without mocked results, edited latency, or playback retiming. The narrated MP4 adds spoken explanation to that recording. The planned interaction timeline is 90 seconds; the actual media duration is 93.0 seconds, verified from the WebM. [Playback evidence](demo/video_validation.json).
 
 | Planned time | Action and optional spoken narration |
 |---|---|
@@ -47,7 +47,19 @@ After installing `requirements-dev.txt`, use an installed Google Chrome browser 
 
 The script defaults to Chrome's standard Windows installation path. Supply `--chrome` with the actual browser executable on another setup. Wait for `/api/ready` first. The script uses only public examples and a fictional teaching record, and writes the WebM, screenshots, response evidence and recording metadata. Require playback verification to report `status: passed` with decoded positions matching the requested seek times. Check the resulting media before uploading; recording completion alone is not proof of playability.
 
-For a spoken submission video, record the optional narration above while demonstrating the same verified flow. Do not imply that the captioned artifact already contains narration.
+The commands above reproduce the original silent capture. The linked narrated MP4 supplies the spoken submission edition; the original WebM and its validation records remain unchanged.
+
+## Reproduce the narrated edition
+
+The voice is Microsoft AriaNeural synthetic speech, generated from ten conversational segments. The [narration metadata](demo/narration_metadata.json) records exact text, voice, speech pacing and hashes; [WebVTT](demo/narration.vtt) provides timed text. One speech segment is paced about three percent faster to fit its scene; the original screen footage is not retimed. Generating narration sends only the public script to Microsoft's online speech service.
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install edge-tts==7.2.8 imageio-ffmpeg==0.6.0
+.\.venv\Scripts\python.exe scripts/narrate_demo.py
+.\.venv\Scripts\python.exe scripts/check_narrated_video.py
+```
+
+These are editing dependencies, not app-server dependencies. The completed MP4 passed full video/audio decoding and Chrome playback with five exact seeks and a live decoded audio track. This is technical verification, not a claim of human listening.
 
 ## Screenshots
 

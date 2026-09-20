@@ -1,0 +1,14 @@
+{
+  "decode_exit_code": 0,
+  "streams_and_audio_levels": [
+    "Duration: 00:01:33.00, start: 0.000000, bitrate: 387 kb/s",
+    "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 1440x1000 [SAR 1:1 DAR 36:25], 274 kb/s, 25 fps, 25 tbr, 12800 tbn (default)",
+    "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, mono, fltp, 106 kb/s (default)",
+    "Stream #0:0(und): Video: wrapped_avframe, yuv420p(tv, bt470bg/unknown/unknown, progressive), 1440x1000 [SAR 1:1 DAR 36:25], q=2-31, 200 kb/s, 25 fps, 25 tbn (default)",
+    "Stream #0:1(und): Audio: pcm_s16le, 48000 Hz, mono, s16, 768 kb/s (default)",
+    "[Parsed_volumedetect_0 @ 000001cb17565100] mean_volume: -18.9 dB",
+    "[Parsed_volumedetect_0 @ 000001cb17565100] max_volume: -1.4 dB"
+  ],
+  "passed": true,
+  "scope": "Full video and audio decode; audible non-silent AAC track and measured peak. This is a technical audio check, not a claim of human listening."
+}

@@ -1,0 +1,9 @@
+{
+  "video": "again-demo.webm",
+  "first_caption_visible_frame_s": 2.8,
+  "recorded_caption_event_elapsed_s": 0.015,
+  "observed_offset_s": 2.785,
+  "time_resolution_s": 0.04,
+  "method": "FFmpeg 25fps raw RGB crop around caption left border (x210 y910 width50 height80), first persistent caption-border onset. Pixel region before onset was normal page panel. Frame-level observation; not subframe clock synchronization.",
+  "suggested_narration_offset_s": 2.8
+}

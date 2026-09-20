@@ -1,0 +1,31 @@
+WEBVTT
+
+00:00:02.200 --> 00:00:08.848
+Ever fixed the same error twice? Again remembers what you've tried, so you can pick up where you left off.
+
+00:00:15.000 --> 00:00:23.922
+Here, the administrator check already passed. The problem is starting the worker. Again brings back the earlier failed attempts.
+
+00:00:24.500 --> 00:00:30.106
+It keeps the outcome honest: worker startup was fixed, but the later trace was still unresolved.
+
+00:00:33.500 --> 00:00:41.800
+Same error, different situation. If the administrator check failed, the next step changes. Context matters.
+
+00:00:42.300 --> 00:00:48.245
+Switch memory off, and there's no pretend answer. Again says the history isn't available.
+
+00:00:50.000 --> 00:00:56.023
+Now let's teach it something. In this fictional example, the browser is using the wrong port.
+
+00:01:01.000 --> 00:01:06.549
+Save what you tried and what happened. Moss indexes the note for your browser session.
+
+00:01:08.500 --> 00:01:15.830
+Next time, ask in your own words. Moss finds the note, and Again asks whether those same conditions apply.
+
+00:01:21.800 --> 00:01:28.244
+You can inspect the sources, retrieved IDs, and real timings. No mystery answers.
+
+00:01:29.000 --> 00:01:32.558
+Again. Stop repeating failed fixes.

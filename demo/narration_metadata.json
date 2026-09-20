@@ -1,0 +1,85 @@
+{
+  "created_utc": "2026-09-20T18:24:02.704468+00:00",
+  "file": "again-demo-narrated.mp4",
+  "voice": "en-US-AriaNeural",
+  "voice_type": "Synthetic speech; not a human recording",
+  "speech_service": "Microsoft Edge online speech via edge-tts7.2.8; public script only",
+  "footage": "Original genuine 93-second screen recording; H.264 transcode, no footage retiming or result alteration",
+  "source_sha256": "ad802e80f033ff8d214ea7fc2124428d8097f080422dee69c1651a5eb43fc39b",
+  "bytes": 4502598,
+  "sha256": "00cf537fe6fd0b97e344ed030b36e088cb3e6a20bea7bb25f9d330bedb165225",
+  "duration_s": 93,
+  "audio": "AAC160k,48kHz,normalized to-16LUFS target/-1.5dBTP",
+  "segments": [
+    {
+      "start_s": 2.2,
+      "end_s": 8.848,
+      "text": "Ever fixed the same error twice? Again remembers what you've tried, so you can pick up where you left off.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 6.648
+    },
+    {
+      "start_s": 15.0,
+      "end_s": 23.922,
+      "text": "Here, the administrator check already passed. The problem is starting the worker. Again brings back the earlier failed attempts.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 8.922
+    },
+    {
+      "start_s": 24.5,
+      "end_s": 30.106,
+      "text": "It keeps the outcome honest: worker startup was fixed, but the later trace was still unresolved.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 5.606
+    },
+    {
+      "start_s": 33.5,
+      "end_s": 41.8,
+      "text": "Same error, different situation. If the administrator check failed, the next step changes. Context matters.",
+      "speech_pacing_factor": 1.031082,
+      "original_speech_s": 8.558
+    },
+    {
+      "start_s": 42.3,
+      "end_s": 48.245,
+      "text": "Switch memory off, and there's no pretend answer. Again says the history isn't available.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 5.945
+    },
+    {
+      "start_s": 50.0,
+      "end_s": 56.023,
+      "text": "Now let's teach it something. In this fictional example, the browser is using the wrong port.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 6.023
+    },
+    {
+      "start_s": 61.0,
+      "end_s": 66.549,
+      "text": "Save what you tried and what happened. Moss indexes the note for your browser session.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 5.549
+    },
+    {
+      "start_s": 68.5,
+      "end_s": 75.83,
+      "text": "Next time, ask in your own words. Moss finds the note, and Again asks whether those same conditions apply.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 7.33
+    },
+    {
+      "start_s": 81.8,
+      "end_s": 88.244,
+      "text": "You can inspect the sources, retrieved IDs, and real timings. No mystery answers.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 6.444
+    },
+    {
+      "start_s": 89.0,
+      "end_s": 92.558,
+      "text": "Again. Stop repeating failed fixes.",
+      "speech_pacing_factor": 1.0,
+      "original_speech_s": 3.558
+    }
+  ]
+}

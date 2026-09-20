@@ -8,9 +8,9 @@
 2. **Source repository:** https://github.com/AngRoy/again
 3. **PRD:** https://github.com/AngRoy/again/blob/main/PRD.md
 4. **Architecture image:** https://github.com/AngRoy/again/blob/main/architecture.png
-5. **Video:** [Download the 93-second WebM](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo.webm) - [repository view](https://github.com/AngRoy/again/blob/main/demo/again-demo.webm), [raw file](https://raw.githubusercontent.com/AngRoy/again/main/demo/again-demo.webm).
+5. **Video:** [Download the narrated MP4](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo-narrated.mp4). The [original silent 93-second WebM](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo.webm) remains available.
 
-The video is a **silent captioned live walkthrough**: real public-browser requests, no mocked responses, no spoken audio, no edited latency or playback retiming. If the submission form requires a separate video host, upload this verified file there and use the resulting viewable link. A local file or an unverified upload is not a submitted video.
+The primary video is a **narrated live walkthrough** with synthesized spoken audio over the real browser recording. The original silent WebM is retained: real public-browser requests, no mocked responses, no edited latency or playback retiming. If the submission form requires a separate video host, upload this verified file there and use the resulting viewable link. A local file or an unverified upload is not a submitted video.
 
 ## Verification
 
@@ -25,10 +25,12 @@ The video is a **silent captioned live walkthrough**: real public-browser reques
 | Health | `/api/health` and `/api/ready` returned HTTP 200, `ready=true`, seven seed records. |
 | Timing | [Scope-separated observations and limits](measurements/MEASUREMENTS.md). Startup-to-ready: 11,049.379 ms; platform wake-up is separate. |
 | Recording | [Metadata](demo/demo_recording.json) and [five genuine response records](demo/demo_api_evidence.json). Lead incident, different preflight stage, memory off, fictional teaching, taught-memory paraphrase. |
-| Playback | [Verified metadata and five decoded seeks](demo/video_validation.json): 93.0 seconds, 1440 x 1000, 8,315,080 bytes. |
+| Original WebM playback | [Verified metadata and five decoded seeks](demo/video_validation.json): 93.0 seconds, 1440 x 1000, 8,315,080 bytes. |
 | Architecture | [Document](ARCHITECTURE.md), [SVG](architecture.svg), [PNG](architecture.png). |
 
-Video SHA-256: `ad802e80f033ff8d214ea7fc2124428d8097f080422dee69c1651a5eb43fc39b`.
+Narrated MP4: **93 seconds**, 4,502,598 bytes. [Browser playback and audio-track checks](demo/narrated_video_validation.json) and [full decode/audio-level checks](demo/narrated_audio_validation.json) passed. SHA-256: `00cf537fe6fd0b97e344ed030b36e088cb3e6a20bea7bb25f9d330bedb165225`.
+
+Original WebM SHA-256: `ad802e80f033ff8d214ea7fc2124428d8097f080422dee69c1651a5eb43fc39b`.
 
 The [initial API failure](measurements/live_checks_initial.json) and [initial browser preflight mismatch](tests/live_artifacts/live_ui_initial_failure.json) are preserved with their actual limitations. They are failure history, not the final state. The native filter and data-defined preflight signals were repaired before the passing checks above. This app's claims do not use earlier research benchmarks or test totals.
 

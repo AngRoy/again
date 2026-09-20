@@ -6,7 +6,7 @@ Again is a small troubleshooting-memory agent. Genuine Moss text retrieval finds
 
 [Repository](https://github.com/AngRoy/again) | [Product requirements](PRD.md) | [Architecture](ARCHITECTURE.md) | [Demo script](DEMO_AND_SUBMISSION.md) | [Submission status](SUBMISSION_READY.md) | [93-second demo](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo.webm)
 
-**Live demo:** [again-fl36.onrender.com](https://again-fl36.onrender.com). The Linux cloud service passed 14/14 genuine API checks and 47 automated app tests. The default-input browser flow and the silent captioned video also passed their checks; see [submission status](SUBMISSION_READY.md). Render Free can sleep after 15 idle minutes, so first access may need a platform restart and Moss warmup. [Render Free limits](https://render.com/docs/free)
+**Live demo:** [again-fl36.onrender.com](https://again-fl36.onrender.com). The Linux cloud service passed 14/14 genuine API checks and 47 automated app tests. The default-input browser flow and original captioned recording also passed their checks. A [narrated MP4](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo-narrated.mp4) is available; see [submission status](SUBMISSION_READY.md). Render Free can sleep after 15 idle minutes, so first access may need a platform restart and Moss warmup. [Render Free limits](https://render.com/docs/free)
 
 ## Why Again
 

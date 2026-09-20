@@ -1,0 +1,2729 @@
+{
+  "measured_utc": "2026-09-20T16:16:34.126664+00:00",
+  "base_url": "https://again-fl36.onrender.com",
+  "status": "passed",
+  "checks_passed": 14,
+  "checks_total": 14,
+  "health": {
+    "status": "ready",
+    "ready": true,
+    "model": "moss-minilm",
+    "seed_count": 7,
+    "teaching_enabled": true,
+    "cold_ready_ms": 11049.379,
+    "message": "Genuine Moss text retrieval is ready.",
+    "storage": "Ephemeral, visitor-isolated additions; one hour of inactivity or restart.",
+    "version": "1.0.0"
+  },
+  "query_including_embedding_ms": {
+    "median": 8.9215,
+    "min": 7.2,
+    "max": 84.098,
+    "n": 12
+  },
+  "method": "Sequential public-safe live API checks; each timing is real. Conditional/private requests may issue two native queries; this is a functional diagnostic, not a throughput benchmark. HTTP roundtrip is from the validation machine, not a browser timer.",
+  "records": [
+    {
+      "check": "lead_worker_launch",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 763.573,
+      "response": {
+        "state": "matched",
+        "headline": "Skip another elevation retry: the ordinary worker cannot launch",
+        "next_step": "Use an ordinary coordinator to start the ordinary worker directly, with a separate elevated controller for WPR. For the existing repaired workflow, inspect controller startup confirmation next; do not repeat elevation as a repair for the old LaunchUnelevated failure.",
+        "what_matches": [
+          "Stage: unelevated_worker_ready",
+          "Administrator check already passed",
+          "The ordinary worker/helper could not launch"
+        ],
+        "failed_attempts": [
+          {
+            "action": "Run the old capture wrapper with an administrator controller",
+            "outcome": "Administrator preflight passed; worker launch failed with Access denied",
+            "source_ids": [
+              "c4_old_launch_failures"
+            ]
+          },
+          {
+            "action": "Retry the old wrapper through the explicit RunAs popup",
+            "outcome": "The same worker-launch stage failed after administrator preflight passed",
+            "source_ids": [
+              "c4_old_launch_failures",
+              "user_elevated_retry"
+            ]
+          }
+        ],
+        "matched_id": "elevated_controller_worker_launch_denied",
+        "evidence": [
+          {
+            "id": "trace_controller_not_elevated",
+            "title": "A System32 prompt does not prove administrator privileges",
+            "stage": "administrator_preflight",
+            "status": "diagnosed",
+            "observations": [
+              "The historical trace controller recorded controller_windows_administrator=false.",
+              "WPR returned Access is denied with 0x80070005; no capture started.",
+              "Being in a system directory did not establish elevation.",
+              "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+            ],
+            "limits": [
+              "Do not apply this recommendation when administrator preflight has already passed.",
+              "Elevation alone did not complete the later tracing workflow."
+            ],
+            "sources": [
+              {
+                "id": "c3_controller_token",
+                "document": "MANAGER_REPORT_CYCLE3.md",
+                "section": "Disk diagnostic",
+                "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c4_elevation_passed",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": true
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "title": "Extraction stopped before loading the model because RAM headroom was low",
+            "stage": "extraction_ram_preflight",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+              "The second extraction passed after headroom recovered.",
+              "The failed preflight produced no model or replay measurements."
+            ],
+            "limits": [
+              "The record does not identify a specific application to close or establish a universal RAM requirement.",
+              "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+            ],
+            "sources": [
+              {
+                "id": "c4_ram_preflight",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Identities, validation and failure history",
+                "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+                "excerpt_type": "two_noncontiguous_sentences"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "trace_controller_not_elevated",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_missing_credentials",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 84.098,
+          "api_ms": 91.061
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "paraphrase_worker",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 249.212,
+      "response": {
+        "state": "matched",
+        "headline": "Skip another elevation retry: the ordinary worker cannot launch",
+        "next_step": "Use an ordinary coordinator to start the ordinary worker directly, with a separate elevated controller for WPR. For the existing repaired workflow, inspect controller startup confirmation next; do not repeat elevation as a repair for the old LaunchUnelevated failure.",
+        "what_matches": [
+          "Stage: unelevated_worker_ready",
+          "Administrator check already passed",
+          "The ordinary worker/helper could not launch"
+        ],
+        "failed_attempts": [
+          {
+            "action": "Run the old capture wrapper with an administrator controller",
+            "outcome": "Administrator preflight passed; worker launch failed with Access denied",
+            "source_ids": [
+              "c4_old_launch_failures"
+            ]
+          },
+          {
+            "action": "Retry the old wrapper through the explicit RunAs popup",
+            "outcome": "The same worker-launch stage failed after administrator preflight passed",
+            "source_ids": [
+              "c4_old_launch_failures",
+              "user_elevated_retry"
+            ]
+          }
+        ],
+        "matched_id": "elevated_controller_worker_launch_denied",
+        "evidence": [
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": true
+          },
+          {
+            "id": "trace_controller_not_elevated",
+            "title": "A System32 prompt does not prove administrator privileges",
+            "stage": "administrator_preflight",
+            "status": "diagnosed",
+            "observations": [
+              "The historical trace controller recorded controller_windows_administrator=false.",
+              "WPR returned Access is denied with 0x80070005; no capture started.",
+              "Being in a system directory did not establish elevation.",
+              "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+            ],
+            "limits": [
+              "Do not apply this recommendation when administrator preflight has already passed.",
+              "Elevation alone did not complete the later tracing workflow."
+            ],
+            "sources": [
+              {
+                "id": "c3_controller_token",
+                "document": "MANAGER_REPORT_CYCLE3.md",
+                "section": "Disk diagnostic",
+                "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c4_elevation_passed",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "title": "Extraction stopped before loading the model because RAM headroom was low",
+            "stage": "extraction_ram_preflight",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+              "The second extraction passed after headroom recovered.",
+              "The failed preflight produced no model or replay measurements."
+            ],
+            "limits": [
+              "The record does not identify a specific application to close or establish a universal RAM requirement.",
+              "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+            ],
+            "sources": [
+              {
+                "id": "c4_ram_preflight",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Identities, validation and failure history",
+                "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+                "excerpt_type": "two_noncontiguous_sentences"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "trace_controller_not_elevated",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_torch_import_order",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 9.464,
+          "api_ms": 10.521
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "button_preflight_example",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 282.801,
+      "response": {
+        "state": "matched",
+        "headline": "A System32 prompt does not prove administrator privileges",
+        "next_step": "Verify the controller's actual Windows administrator token. If it is false, use the prepared separate controller's explicit elevation step. Keep the coding agent and experiment worker unelevated. Re-check the reported stage after elevation.",
+        "what_matches": [
+          "Stage: administrator_preflight",
+          "Controller is not elevated",
+          "Administrator preflight failed"
+        ],
+        "failed_attempts": [
+          {
+            "action": "Start WPR with a non-administrator controller token",
+            "outcome": "Access denied; no capture started",
+            "source_ids": [
+              "c3_controller_token"
+            ]
+          }
+        ],
+        "matched_id": "trace_controller_not_elevated",
+        "evidence": [
+          {
+            "id": "trace_controller_not_elevated",
+            "title": "A System32 prompt does not prove administrator privileges",
+            "stage": "administrator_preflight",
+            "status": "diagnosed",
+            "observations": [
+              "The historical trace controller recorded controller_windows_administrator=false.",
+              "WPR returned Access is denied with 0x80070005; no capture started.",
+              "Being in a system directory did not establish elevation.",
+              "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+            ],
+            "limits": [
+              "Do not apply this recommendation when administrator preflight has already passed.",
+              "Elevation alone did not complete the later tracing workflow."
+            ],
+            "sources": [
+              {
+                "id": "c3_controller_token",
+                "document": "MANAGER_REPORT_CYCLE3.md",
+                "section": "Disk diagnostic",
+                "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c4_elevation_passed",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": true
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "trace_controller_not_elevated",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_torch_import_order",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_missing_credentials",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 11.25,
+          "api_ms": 12.204
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "different_preflight_stage",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 459.726,
+      "response": {
+        "state": "matched",
+        "headline": "A System32 prompt does not prove administrator privileges",
+        "next_step": "Verify the controller's actual Windows administrator token. If it is false, use the prepared separate controller's explicit elevation step. Keep the coding agent and experiment worker unelevated. Re-check the reported stage after elevation.",
+        "what_matches": [
+          "Stage: administrator_preflight",
+          "Controller is not elevated"
+        ],
+        "failed_attempts": [
+          {
+            "action": "Start WPR with a non-administrator controller token",
+            "outcome": "Access denied; no capture started",
+            "source_ids": [
+              "c3_controller_token"
+            ]
+          }
+        ],
+        "matched_id": "trace_controller_not_elevated",
+        "evidence": [
+          {
+            "id": "trace_controller_not_elevated",
+            "title": "A System32 prompt does not prove administrator privileges",
+            "stage": "administrator_preflight",
+            "status": "diagnosed",
+            "observations": [
+              "The historical trace controller recorded controller_windows_administrator=false.",
+              "WPR returned Access is denied with 0x80070005; no capture started.",
+              "Being in a system directory did not establish elevation.",
+              "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+            ],
+            "limits": [
+              "Do not apply this recommendation when administrator preflight has already passed.",
+              "Elevation alone did not complete the later tracing workflow."
+            ],
+            "sources": [
+              {
+                "id": "c3_controller_token",
+                "document": "MANAGER_REPORT_CYCLE3.md",
+                "section": "Disk diagnostic",
+                "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c4_elevation_passed",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": true
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "trace_controller_not_elevated",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_missing_credentials",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_torch_import_order",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 10.015,
+          "api_ms": 10.59
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "paraphrase_native_order",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 245.619,
+      "response": {
+        "state": "matched",
+        "headline": "Native Moss initialization fails after Torch loads",
+        "next_step": "Reproduce in a fresh process with genuine Moss bootstrap before Torch import, then run a small real-query smoke check. Keep the existing narrow bootstrap repair and record the actual import order.",
+        "what_matches": [
+          "Stage: native_sdk_bootstrap",
+          "Native initialization fails",
+          "Torch was loaded before the native SDK"
+        ],
+        "failed_attempts": [
+          {
+            "action": "Initialize the native Moss SDK after Torch is already loaded",
+            "outcome": "Native DLL initialization failed before decoding in the recorded smoke worker",
+            "source_ids": [
+              "c2_import_order"
+            ]
+          }
+        ],
+        "matched_id": "moss_torch_import_order",
+        "evidence": [
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": true
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "title": "Extraction stopped before loading the model because RAM headroom was low",
+            "stage": "extraction_ram_preflight",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+              "The second extraction passed after headroom recovered.",
+              "The failed preflight produced no model or replay measurements."
+            ],
+            "limits": [
+              "The record does not identify a specific application to close or establish a universal RAM requirement.",
+              "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+            ],
+            "sources": [
+              {
+                "id": "c4_ram_preflight",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Identities, validation and failure history",
+                "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+                "excerpt_type": "two_noncontiguous_sentences"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "numpy_first_query_commit_jump",
+            "title": "A tiny matrix operation changes commit much more than working set",
+            "stage": "first_dense_query",
+            "status": "diagnosed",
+            "observations": [
+              "The isolated 25 by 576 matrix-vector multiply added about 32.09 MiB private/commit, but only about 0.047 MiB working set.",
+              "Normalization, eligible-row gathering, and sorting did not produce the large jump.",
+              "Sixty-four repeated multiplies added only about 0.027 MiB private memory.",
+              "The responsible operation was measured; the allocator's internal mechanism was not proven."
+            ],
+            "limits": [
+              "This is a diagnosis, not a demonstrated memory reduction.",
+              "The observations do not establish a memory leak or the exact allocator mechanism.",
+              "Do not subtract the measured commitment merely because the working-set change is small."
+            ],
+            "sources": [
+              {
+                "id": "c4_dense_memory",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Memory phases and the earlier allocation result",
+                "excerpt": "A single additional diagnostic isolates dense's cold first-query increment to the 25 x 576 matrix-vector multiply: +32.09375 MiB private/commit, but +0.046875 MiB working set. Normalization, eligible-row gathering and sorting do not create the large jump; 64 repeated multiplies add only 0.02734 MiB private.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "moss_torch_import_order",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "numpy_first_query_commit_jump",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_missing_credentials",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 7.498,
+          "api_ms": 8.059
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "paraphrase_ram",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 245.689,
+      "response": {
+        "state": "matched",
+        "headline": "Extraction stopped before loading the model because RAM headroom was low",
+        "next_step": "Re-check available RAM and resume the same bounded extraction only after the declared headroom is available. Preserve the failed preflight separately from completed model measurements.",
+        "what_matches": [
+          "Stage: extraction_ram_preflight",
+          "The RAM preflight refused the run before loading"
+        ],
+        "failed_attempts": [
+          {
+            "action": "Start extraction while available RAM is below the declared preflight threshold",
+            "outcome": "Preflight refused the run before model loading",
+            "source_ids": [
+              "c4_ram_preflight"
+            ]
+          }
+        ],
+        "matched_id": "extraction_ram_preflight",
+        "evidence": [
+          {
+            "id": "extraction_ram_preflight",
+            "title": "Extraction stopped before loading the model because RAM headroom was low",
+            "stage": "extraction_ram_preflight",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+              "The second extraction passed after headroom recovered.",
+              "The failed preflight produced no model or replay measurements."
+            ],
+            "limits": [
+              "The record does not identify a specific application to close or establish a universal RAM requirement.",
+              "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+            ],
+            "sources": [
+              {
+                "id": "c4_ram_preflight",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Identities, validation and failure history",
+                "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+                "excerpt_type": "two_noncontiguous_sentences"
+              }
+            ],
+            "applicable": true
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "trace_controller_not_elevated",
+            "title": "A System32 prompt does not prove administrator privileges",
+            "stage": "administrator_preflight",
+            "status": "diagnosed",
+            "observations": [
+              "The historical trace controller recorded controller_windows_administrator=false.",
+              "WPR returned Access is denied with 0x80070005; no capture started.",
+              "Being in a system directory did not establish elevation.",
+              "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+            ],
+            "limits": [
+              "Do not apply this recommendation when administrator preflight has already passed.",
+              "Elevation alone did not complete the later tracing workflow."
+            ],
+            "sources": [
+              {
+                "id": "c3_controller_token",
+                "document": "MANAGER_REPORT_CYCLE3.md",
+                "section": "Disk diagnostic",
+                "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c4_elevation_passed",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "numpy_first_query_commit_jump",
+            "title": "A tiny matrix operation changes commit much more than working set",
+            "stage": "first_dense_query",
+            "status": "diagnosed",
+            "observations": [
+              "The isolated 25 by 576 matrix-vector multiply added about 32.09 MiB private/commit, but only about 0.047 MiB working set.",
+              "Normalization, eligible-row gathering, and sorting did not produce the large jump.",
+              "Sixty-four repeated multiplies added only about 0.027 MiB private memory.",
+              "The responsible operation was measured; the allocator's internal mechanism was not proven."
+            ],
+            "limits": [
+              "This is a diagnosis, not a demonstrated memory reduction.",
+              "The observations do not establish a memory leak or the exact allocator mechanism.",
+              "Do not subtract the measured commitment merely because the working-set change is small."
+            ],
+            "sources": [
+              {
+                "id": "c4_dense_memory",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Memory phases and the earlier allocation result",
+                "excerpt": "A single additional diagnostic isolates dense's cold first-query increment to the 25 x 576 matrix-vector multiply: +32.09375 MiB private/commit, but +0.046875 MiB working set. Normalization, eligible-row gathering and sorting do not create the large jump; 64 repeated multiplies add only 0.02734 MiB private.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "extraction_ram_preflight",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "trace_controller_not_elevated",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "numpy_first_query_commit_jump",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 8.305,
+          "api_ms": 8.916
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "ambiguous_error",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 245.174,
+      "response": {
+        "state": "clarify",
+        "headline": "The failure stage matters",
+        "next_step": "Which stage failed: administrator preflight, ordinary-worker launch, or waiting for controller startup?",
+        "what_matches": [
+          "Similar wording appears in memories with different prerequisites."
+        ],
+        "failed_attempts": [],
+        "matched_id": null,
+        "evidence": [
+          {
+            "id": "trace_controller_not_elevated",
+            "title": "A System32 prompt does not prove administrator privileges",
+            "stage": "administrator_preflight",
+            "status": "diagnosed",
+            "observations": [
+              "The historical trace controller recorded controller_windows_administrator=false.",
+              "WPR returned Access is denied with 0x80070005; no capture started.",
+              "Being in a system directory did not establish elevation.",
+              "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+            ],
+            "limits": [
+              "Do not apply this recommendation when administrator preflight has already passed.",
+              "Elevation alone did not complete the later tracing workflow."
+            ],
+            "sources": [
+              {
+                "id": "c3_controller_token",
+                "document": "MANAGER_REPORT_CYCLE3.md",
+                "section": "Disk diagnostic",
+                "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c4_elevation_passed",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "title": "Extraction stopped before loading the model because RAM headroom was low",
+            "stage": "extraction_ram_preflight",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+              "The second extraction passed after headroom recovered.",
+              "The failed preflight produced no model or replay measurements."
+            ],
+            "limits": [
+              "The record does not identify a specific application to close or establish a universal RAM requirement.",
+              "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+            ],
+            "sources": [
+              {
+                "id": "c4_ram_preflight",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Identities, validation and failure history",
+                "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+                "excerpt_type": "two_noncontiguous_sentences"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "trace_controller_not_elevated",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_missing_credentials",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 7.2,
+          "api_ms": 7.614
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "unrelated_input",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 254.035,
+      "response": {
+        "state": "no_match",
+        "headline": "No applicable memory yet",
+        "next_step": "Record the exact failing stage and the conditions you have verified, then recall again.",
+        "what_matches": [],
+        "failed_attempts": [],
+        "matched_id": null,
+        "evidence": [
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "trace_controller_not_elevated",
+            "title": "A System32 prompt does not prove administrator privileges",
+            "stage": "administrator_preflight",
+            "status": "diagnosed",
+            "observations": [
+              "The historical trace controller recorded controller_windows_administrator=false.",
+              "WPR returned Access is denied with 0x80070005; no capture started.",
+              "Being in a system directory did not establish elevation.",
+              "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+            ],
+            "limits": [
+              "Do not apply this recommendation when administrator preflight has already passed.",
+              "Elevation alone did not complete the later tracing workflow."
+            ],
+            "sources": [
+              {
+                "id": "c3_controller_token",
+                "document": "MANAGER_REPORT_CYCLE3.md",
+                "section": "Disk diagnostic",
+                "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c4_elevation_passed",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "moss_missing_credentials",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_torch_import_order",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "trace_controller_not_elevated",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 7.322,
+          "api_ms": 7.72
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "memory_off",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 233.468,
+      "response": {
+        "state": "memory_off",
+        "headline": "History is unavailable with memory off",
+        "next_step": "Enable memory to retrieve recorded attempts and evidence. No retrieval query was made.",
+        "what_matches": [],
+        "failed_attempts": [],
+        "evidence": [],
+        "retrieved": [],
+        "matched_id": null,
+        "timings": {
+          "moss_query_ms": 0,
+          "api_ms": 0.002
+        },
+        "native_query_count": 0
+      }
+    },
+    {
+      "check": "teach_native_index",
+      "passed": true,
+      "response": {
+        "ok": true,
+        "id": "memory_10caddfba3d84916937db307b145259e",
+        "status": "user_reported",
+        "message": "Indexed with Moss for this browser session. Try recalling it in different words.",
+        "indexed": true,
+        "timings": {
+          "index_ms": 282.242,
+          "api_ms": 282.493
+        }
+      }
+    },
+    {
+      "check": "taught_paraphrase",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 461.133,
+      "response": {
+        "state": "clarify",
+        "headline": "A similar outcome you recorded",
+        "next_step": "Do these recorded conditions match your current case? The terminal says the development server is ready at localhost:3001.",
+        "what_matches": [
+          "Moss retrieved your session memory. Its reported outcome is shown below; it has not been independently verified."
+        ],
+        "failed_attempts": [],
+        "matched_id": "memory_10caddfba3d84916937db307b145259e",
+        "evidence": [
+          {
+            "id": "memory_10caddfba3d84916937db307b145259e",
+            "title": "Fictional demonstration: The browser refuses the connection at localhost:3000.",
+            "stage": "user_reported",
+            "status": "synthetic_user_reported",
+            "is_synthetic": true,
+            "conditions": "The terminal says the development server is ready at localhost:3001.",
+            "observations": [
+              "Symptom: The browser refuses the connection at localhost:3000.",
+              "Conditions: The terminal says the development server is ready at localhost:3001.",
+              "Attempted action: Refreshing localhost:3000 did not help; I opened the reported localhost:3001 URL.",
+              "User-reported outcome: Fictional demonstration: the page loaded at localhost:3001."
+            ],
+            "limits": [
+              "User-reported; not independently verified.",
+              "Visible only in this browser session; expires after one hour of inactivity or a server restart."
+            ],
+            "sources": [
+              {
+                "id": "memory_10caddfba3d84916937db307b145259e_note",
+                "document": "Your session note",
+                "section": "Fictional demonstration",
+                "excerpt": "The browser refuses the connection at localhost:3000.\nThe terminal says the development server is ready at localhost:3001.\nRefreshing localhost:3000 did not help; I opened the reported localhost:3001 URL.\nFictional demonstration: the page loaded at localhost:3001.",
+                "excerpt_type": "fictional_note"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "title": "Extraction stopped before loading the model because RAM headroom was low",
+            "stage": "extraction_ram_preflight",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+              "The second extraction passed after headroom recovered.",
+              "The failed preflight produced no model or replay measurements."
+            ],
+            "limits": [
+              "The record does not identify a specific application to close or establish a universal RAM requirement.",
+              "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+            ],
+            "sources": [
+              {
+                "id": "c4_ram_preflight",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Identities, validation and failure history",
+                "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+                "excerpt_type": "two_noncontiguous_sentences"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "memory_10caddfba3d84916937db307b145259e",
+            "score": 1.0,
+            "scope": "your_session"
+          },
+          {
+            "id": "moss_missing_credentials",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_torch_import_order",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 2,
+        "timings": {
+          "moss_query_ms": 42.285,
+          "api_ms": 43.046
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "different_visitor_isolation",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 538.938,
+      "response": {
+        "state": "no_match",
+        "headline": "No applicable memory yet",
+        "next_step": "Record the exact failing stage and the conditions you have verified, then recall again.",
+        "what_matches": [],
+        "failed_attempts": [],
+        "matched_id": null,
+        "evidence": [
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "title": "Extraction stopped before loading the model because RAM headroom was low",
+            "stage": "extraction_ram_preflight",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+              "The second extraction passed after headroom recovered.",
+              "The failed preflight produced no model or replay measurements."
+            ],
+            "limits": [
+              "The record does not identify a specific application to close or establish a universal RAM requirement.",
+              "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+            ],
+            "sources": [
+              {
+                "id": "c4_ram_preflight",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Identities, validation and failure history",
+                "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+                "excerpt_type": "two_noncontiguous_sentences"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "moss_missing_credentials",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_torch_import_order",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 8.181,
+          "api_ms": 8.762
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "unrelated_after_teaching",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 444.729,
+      "response": {
+        "state": "no_match",
+        "headline": "No applicable memory yet",
+        "next_step": "Record the exact failing stage and the conditions you have verified, then recall again.",
+        "what_matches": [],
+        "failed_attempts": [],
+        "matched_id": null,
+        "evidence": [
+          {
+            "id": "memory_10caddfba3d84916937db307b145259e",
+            "title": "Fictional demonstration: The browser refuses the connection at localhost:3000.",
+            "stage": "user_reported",
+            "status": "synthetic_user_reported",
+            "is_synthetic": true,
+            "conditions": "The terminal says the development server is ready at localhost:3001.",
+            "observations": [
+              "Symptom: The browser refuses the connection at localhost:3000.",
+              "Conditions: The terminal says the development server is ready at localhost:3001.",
+              "Attempted action: Refreshing localhost:3000 did not help; I opened the reported localhost:3001 URL.",
+              "User-reported outcome: Fictional demonstration: the page loaded at localhost:3001."
+            ],
+            "limits": [
+              "User-reported; not independently verified.",
+              "Visible only in this browser session; expires after one hour of inactivity or a server restart."
+            ],
+            "sources": [
+              {
+                "id": "memory_10caddfba3d84916937db307b145259e_note",
+                "document": "Your session note",
+                "section": "Fictional demonstration",
+                "excerpt": "The browser refuses the connection at localhost:3000.\nThe terminal says the development server is ready at localhost:3001.\nRefreshing localhost:3000 did not help; I opened the reported localhost:3001 URL.\nFictional demonstration: the page loaded at localhost:3001.",
+                "excerpt_type": "fictional_note"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "trace_controller_not_elevated",
+            "title": "A System32 prompt does not prove administrator privileges",
+            "stage": "administrator_preflight",
+            "status": "diagnosed",
+            "observations": [
+              "The historical trace controller recorded controller_windows_administrator=false.",
+              "WPR returned Access is denied with 0x80070005; no capture started.",
+              "Being in a system directory did not establish elevation.",
+              "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+            ],
+            "limits": [
+              "Do not apply this recommendation when administrator preflight has already passed.",
+              "Elevation alone did not complete the later tracing workflow."
+            ],
+            "sources": [
+              {
+                "id": "c3_controller_token",
+                "document": "MANAGER_REPORT_CYCLE3.md",
+                "section": "Disk diagnostic",
+                "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c4_elevation_passed",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "memory_10caddfba3d84916937db307b145259e",
+            "score": 1.0,
+            "scope": "your_session"
+          },
+          {
+            "id": "moss_missing_credentials",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_torch_import_order",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "trace_controller_not_elevated",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 2,
+        "timings": {
+          "moss_query_ms": 12.776,
+          "api_ms": 13.786
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    },
+    {
+      "check": "forget_native_delete",
+      "passed": true,
+      "http_status": 200,
+      "http_roundtrip_ms": 243.54,
+      "response": {
+        "state": "no_match",
+        "headline": "No applicable memory yet",
+        "next_step": "Record the exact failing stage and the conditions you have verified, then recall again.",
+        "what_matches": [],
+        "failed_attempts": [],
+        "matched_id": null,
+        "evidence": [
+          {
+            "id": "moss_missing_credentials",
+            "title": "Moss is installed, but authenticated queries are blocked",
+            "stage": "moss_authentication",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+              "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+              "Only credential presence and authentication status were published."
+            ],
+            "limits": [
+              "This remedy addresses missing credentials, not every authentication or connectivity error.",
+              "Never paste keys into this demo or commit them to a repository."
+            ],
+            "sources": [
+              {
+                "id": "c1_credentials",
+                "document": "MANAGER_REPORT.md",
+                "section": "Genuine Moss: implemented boundary, blocked query",
+                "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+                "excerpt_type": "sanitized_quote"
+              },
+              {
+                "id": "c2_credentials",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "c2_gate",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Credentials and genuine native validation",
+                "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "title": "The worker is ready, but the trace controller never confirms startup",
+            "stage": "controller_startup_wait",
+            "status": "unresolved",
+            "observations": [
+              "The ordinary worker became ready and remained non-admin.",
+              "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+              "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+              "Zero calibration reads completed; the recording clock never began."
+            ],
+            "limits": [
+              "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+              "No successful full capture or device-byte measurement is established.",
+              "This submission does not require another trace attempt."
+            ],
+            "sources": [
+              {
+                "id": "c4_controller_wait",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+                "excerpt_type": "sanitized_quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "title": "Extraction stopped before loading the model because RAM headroom was low",
+            "stage": "extraction_ram_preflight",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+              "The second extraction passed after headroom recovered.",
+              "The failed preflight produced no model or replay measurements."
+            ],
+            "limits": [
+              "The record does not identify a specific application to close or establish a universal RAM requirement.",
+              "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+            ],
+            "sources": [
+              {
+                "id": "c4_ram_preflight",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Identities, validation and failure history",
+                "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+                "excerpt_type": "two_noncontiguous_sentences"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "moss_torch_import_order",
+            "title": "Native Moss initialization fails after Torch loads",
+            "stage": "native_sdk_bootstrap",
+            "status": "resolved_in_recorded_environment",
+            "observations": [
+              "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+              "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+              "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+            ],
+            "limits": [
+              "The exact DLL-level cause was not isolated.",
+              "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+            ],
+            "sources": [
+              {
+                "id": "c2_import_order",
+                "document": "MANAGER_REPORT_CYCLE2.md",
+                "section": "Failure history",
+                "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "title": "Skip another elevation retry: the ordinary worker cannot launch",
+            "stage": "unelevated_worker_ready",
+            "status": "partially_resolved",
+            "observations": [
+              "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+              "The generic Access denied message did not identify the exact native API that failed.",
+              "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+              "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+            ],
+            "limits": [
+              "Worker startup was verified; successful physical disk attribution was not.",
+              "The exact native call responsible for the old Access denied error remains unidentified.",
+              "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+            ],
+            "sources": [
+              {
+                "id": "c4_old_launch_failures",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+                "excerpt_type": "quote"
+              },
+              {
+                "id": "user_elevated_retry",
+                "document": "User-supplied capture console transcript",
+                "section": "Explicit RunAs popup result",
+                "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+                "excerpt_type": "sanitized_summary"
+              },
+              {
+                "id": "c4_worker_ready",
+                "document": "MANAGER_REPORT_CYCLE4.md",
+                "section": "Revised disk launch and bounded live outcome",
+                "excerpt": "The ordinary worker became ready and remained non-admin.",
+                "excerpt_type": "quote"
+              }
+            ],
+            "applicable": false
+          }
+        ],
+        "retrieved": [
+          {
+            "id": "moss_missing_credentials",
+            "score": 1.0,
+            "scope": "public_seed"
+          },
+          {
+            "id": "controller_startup_confirmation_missing",
+            "score": 0.96875,
+            "scope": "public_seed"
+          },
+          {
+            "id": "extraction_ram_preflight",
+            "score": 0.9393939971923828,
+            "scope": "public_seed"
+          },
+          {
+            "id": "moss_torch_import_order",
+            "score": 0.9117647409439087,
+            "scope": "public_seed"
+          },
+          {
+            "id": "elevated_controller_worker_launch_denied",
+            "score": 0.8857142925262451,
+            "scope": "public_seed"
+          }
+        ],
+        "native_query_count": 1,
+        "timings": {
+          "moss_query_ms": 8.379,
+          "api_ms": 8.91
+        },
+        "timing_note": "Moss query includes text embedding; scores are native ranking values, not confidence probabilities."
+      }
+    }
+  ]
+}

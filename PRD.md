@@ -4,7 +4,7 @@
 
 **Tagline:** Stop repeating failed fixes.
 
-**Build snapshot:** deadline MVP specification aligned to the current implementation contract. Final acceptance observations and deployment links are tracked in [SUBMISSION_READY.md](SUBMISSION_READY.md); pending checks are not represented as passed.
+**Build snapshot:** the deployed MVP passed 14/14 live API checks and 47 automated app tests. Six live default-input browser checks and the recorded 93-second walkthrough also passed; details are tracked in [SUBMISSION_READY.md](SUBMISSION_READY.md). [Measurement evidence](measurements/MEASUREMENTS.md) states the sample size and limitations.
 
 ## User and problem
 
@@ -47,7 +47,7 @@ Tests must exercise these actual critical flows. This app cannot inherit researc
 
 Moss `moss-minilm` provides built-in text embeddings and live incident retrieval. Seven public-safe historical records are immutable seeds. The separate fictional teaching template is not pre-indexed as a verified incident. Each incident contains a stage, current-condition requirements, observations, recorded failed actions, one next step, limitations and source excerpts.
 
-A bounded, explicit policy examines records returned by Moss. Data-defined stage aliases and condition signals establish applicability; missing or contradictory facts lead to clarification. Explicit current stage takes precedence over inferred wording. A vector score is a retrieval signal, not a calibrated probability that a remedy is correct. The policy does not return hardcoded answers for example-button text. Visitor notes also require two meaningful shared condition terms or one specific shared technical identifier after semantic retrieval. This conservative check can miss valid paraphrases; it only enables a condition-check question, never a verified repair claim.
+A bounded, explicit policy examines records returned by Moss. Data-defined stage aliases and condition signals establish applicability; missing or contradictory facts lead to clarification. Explicit current stage takes precedence over inferred wording. A vector score is a retrieval signal, not a calibrated probability that a remedy is correct. Scores from the seed and visitor indexes are not sorted together as one calibrated ranking. The policy does not return hardcoded answers for example-button text. Visitor notes also require two meaningful shared condition terms or one specific shared technical identifier after semantic retrieval. This conservative check can miss valid paraphrases; it only enables a condition-check question, never a verified repair claim.
 
 Resolved-in-recorded-environment, diagnosed, partially resolved, unresolved and user-reported are distinct outcomes. An unchanged error in an already elevated controller is not evidence that elevation failed. A startup timeout does not prove that a UAC prompt was refused or even visible.
 

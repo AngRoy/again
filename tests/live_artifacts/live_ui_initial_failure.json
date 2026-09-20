@@ -1,0 +1,17 @@
+{
+  "status": "failed",
+  "scope": "Actual live browser seed test, no teaching or forgetting.",
+  "passed_before_failure": [
+    "genuine lead recall",
+    "partial status and two recorded attempts",
+    "source excerpt opened",
+    "actual metrics visible"
+  ],
+  "failed_check": "Second supplied example should identify non-admin controller preflight.",
+  "query": "My PowerShell prompt is in System32, but administrator_preflight says false.",
+  "stage": "administrator_preflight",
+  "conditions": "",
+  "observed_ui_headline": "One detail before a next step",
+  "expected_ui_headline": "A System32 prompt does not prove administrator privileges",
+  "limitation": "The first test version did not persist raw response JSON before assertion; headline is preserved from its actual Playwright assertion output."
+}

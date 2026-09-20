@@ -1,0 +1,36 @@
+{
+  "checked_utc": "2026-09-20T16:18:20.638064+00:00",
+  "url": "https://again-fl36.onrender.com",
+  "deployed_source_commit": "99a098b99733a2a99511b1407410fd9eaf02a1d8",
+  "assets": [
+    {
+      "path": "static/index.html",
+      "status": 200,
+      "bytes": 10635,
+      "sha256": "e714d24dc0ae2d0662da4267bd618affbeeeee6136452895a3596e34e8aad2c9",
+      "raw_worktree_bytes_match": false,
+      "matches_deployed_git_blob": true,
+      "normalized_worktree_text_matches": true
+    },
+    {
+      "path": "static/app.css",
+      "status": 200,
+      "bytes": 22878,
+      "sha256": "18c2a96d84ef633d81dc08fb1eb1d45e643de981bda027a8a7db84bc3c9561d0",
+      "raw_worktree_bytes_match": false,
+      "matches_deployed_git_blob": true,
+      "normalized_worktree_text_matches": true
+    },
+    {
+      "path": "static/app.js",
+      "status": 200,
+      "bytes": 24571,
+      "sha256": "bcbbcd00878a500c9103829ddb35413ab98dafaa132e9b3e980e3b2865e70ec1",
+      "raw_worktree_bytes_match": false,
+      "matches_deployed_git_blob": true,
+      "normalized_worktree_text_matches": true
+    }
+  ],
+  "all_deployed_source_matches": true,
+  "comparison_note": "Windows worktree uses CRLF; Git and the Linux deployment use LF. Raw worktree mismatch is therefore reported separately from exact deployed-commit identity."
+}

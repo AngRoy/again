@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "checked_utc": "2026-09-20T16:24:43.353386+00:00",
+  "scope": "Chrome loaded the actual local WebM and decoded seeks at five timestamps; no external queries, recompression or retiming.",
+  "file": "again-demo.webm",
+  "bytes": 8315080,
+  "sha256": "ad802e80f033ff8d214ea7fc2124428d8097f080422dee69c1651a5eb43fc39b",
+  "metadata": {
+    "duration_s": 93,
+    "width": 1440,
+    "height": 1000,
+    "ready_state": 4,
+    "error": null
+  },
+  "decoded_seek_checks": [
+    {
+      "current_time_s": 5,
+      "ready_state": 4,
+      "error": null
+    },
+    {
+      "current_time_s": 25,
+      "ready_state": 4,
+      "error": null
+    },
+    {
+      "current_time_s": 55,
+      "ready_state": 4,
+      "error": null
+    },
+    {
+      "current_time_s": 78,
+      "ready_state": 4,
+      "error": null
+    },
+    {
+      "current_time_s": 87,
+      "ready_state": 4,
+      "error": null
+    }
+  ],
+  "verification_note": "The complete local file was fetched into a Blob before seeking, avoiding HTTP Range support requirements; actual current times are asserted against requested timestamps."
+}

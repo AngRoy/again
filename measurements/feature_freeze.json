@@ -1,0 +1,17 @@
+{
+  "feature_freeze_utc": "2026-09-20T16:16:06.481106+00:00",
+  "deadline_utc": "2026-09-20T18:29:00+00:00",
+  "minutes_before_deadline": 132.89,
+  "scope": "Feature set frozen. Remaining work: acceptance testing, correctness fixes only, recording, documentation and submission packaging.",
+  "features": [
+    "Genuine Moss text recall",
+    "Stage and condition checks over retrieved records",
+    "Failed-attempt and outcome evidence",
+    "Actual memory on/off",
+    "Visitor-isolated teaching, recall and deletion",
+    "Live query/API/browser timing"
+  ],
+  "public_repo": "https://github.com/AngRoy/again",
+  "public_app": "https://again-fl36.onrender.com",
+  "research": "Paused; prior evidence preserved."
+}

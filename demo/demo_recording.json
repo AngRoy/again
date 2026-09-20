@@ -1,0 +1,115 @@
+{
+  "status": "passed",
+  "base_url": "https://again-fl36.onrender.com",
+  "recorded_utc": "2026-09-20T16:21:51.193535+00:00",
+  "scope": "Real browser interactions with the public backend. Captions only; no audio narration, mocks, edited latency, or playback retiming.",
+  "recording_run_elapsed_s": 93.375,
+  "planned_action_duration_s": 90,
+  "video": "again-demo.webm",
+  "teaching_is_synthetic": true,
+  "new_incident_id": "memory_fad782dcbe81481f9f634c25cd67cb5b",
+  "native_recalled_new_id": true,
+  "events": [
+    {
+      "elapsed_s": 0.015,
+      "kind": "caption",
+      "index": 0,
+      "text": "Again remembers what happened, so a familiar error does not send you back to a failed fix."
+    },
+    {
+      "elapsed_s": 6.062,
+      "kind": "caption",
+      "index": 1,
+      "text": "This is a real recorded incident. The administrator check passed, but starting the ordinary worker failed."
+    },
+    {
+      "elapsed_s": 12.515,
+      "kind": "api_response",
+      "endpoint": "recall",
+      "http_status": 200
+    },
+    {
+      "elapsed_s": 13.015,
+      "kind": "caption",
+      "index": 2,
+      "text": "Two earlier attempts failed at the same stage. The source excerpts stay attached to the next step."
+    },
+    {
+      "elapsed_s": 21.093,
+      "kind": "caption",
+      "index": 3,
+      "text": "Worker startup was repaired. The later trace was still unresolved. Again preserves that distinction."
+    },
+    {
+      "elapsed_s": 30.375,
+      "kind": "api_response",
+      "endpoint": "recall",
+      "http_status": 200
+    },
+    {
+      "elapsed_s": 30.515,
+      "kind": "caption",
+      "index": 4,
+      "text": "The same error at administrator preflight calls for a different action. Conditions matter."
+    },
+    {
+      "elapsed_s": 39.406,
+      "kind": "api_response",
+      "endpoint": "recall",
+      "http_status": 200
+    },
+    {
+      "elapsed_s": 39.578,
+      "kind": "caption",
+      "index": 5,
+      "text": "With memory off, Again makes zero retrieval queries. Past outcomes are honestly unavailable."
+    },
+    {
+      "elapsed_s": 47.125,
+      "kind": "caption",
+      "index": 6,
+      "text": "Now a fictional teaching example: the browser uses port 3000, but the server reports port 3001."
+    },
+    {
+      "elapsed_s": 57.797,
+      "kind": "api_response",
+      "endpoint": "teach",
+      "http_status": 200
+    },
+    {
+      "elapsed_s": 57.937,
+      "kind": "caption",
+      "index": 7,
+      "text": "This outcome is saved as user reported and indexed by Moss, only for this browser session."
+    },
+    {
+      "elapsed_s": 65.078,
+      "kind": "caption",
+      "index": 8,
+      "text": "Ask in different words. A live Moss query can recover the newly recorded outcome."
+    },
+    {
+      "elapsed_s": 71.39,
+      "kind": "api_response",
+      "endpoint": "recall",
+      "http_status": 200
+    },
+    {
+      "elapsed_s": 79.047,
+      "kind": "caption",
+      "index": 9,
+      "text": "Inspect the returned IDs and actual timings. Query embedding, backend time and browser time stay separate."
+    },
+    {
+      "elapsed_s": 88.047,
+      "kind": "caption",
+      "index": 10,
+      "text": "Again. Stop repeating failed fixes."
+    },
+    {
+      "elapsed_s": 90.015,
+      "kind": "finished"
+    }
+  ],
+  "page_errors": []
+}

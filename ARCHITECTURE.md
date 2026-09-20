@@ -31,7 +31,7 @@ The configured limits are 60-minute visitor inactivity expiry, at most 100 activ
 
 ## Async runtime and measurements
 
-FastAPI serves JSON requests with native async Moss operations and serialized access. Startup warms one seed working set; requests do not create a fresh seed session each time. No synchronous `asyncio.Runner.run` is nested inside the active server loop.
+FastAPI serves JSON requests with native async Moss operations and serialized access. Startup warms one seed working set; requests do not create a fresh seed session each time. No synchronous `asyncio.Runner.run` is nested inside the active server loop. Canceled requests retain the serialization lock until their native mutation and ownership bookkeeping finish; failed rollback IDs remain owned and bounded until cleanup succeeds.
 
 The retrieval metric wraps the real query calls and result assembly; local embedding is included. For requests that search more than one permitted working set, report the real calls and combined retrieval interval. API total and browser round trip are separate observations. Cold session opening/download is not warm query latency. Scores are exposed as retrieval scores, not diagnosis probabilities.
 
@@ -39,7 +39,7 @@ Readiness, index lifecycle and observed latency are explicit operational signals
 
 ## Deployment actually being prepared
 
-The public GitHub repository is [AngRoy/again](https://github.com/AngRoy/again). The live app is [again-fl36.onrender.com](https://again-fl36.onrender.com) on Render Free. The Docker/Linux build passed remote readiness with seven seed documents; complete feature acceptance is recorded separately in the submission status. The initial real text-retrieval diagnostic ran on Windows and is not evidence of a working Linux deployment.
+The public GitHub repository is [AngRoy/again](https://github.com/AngRoy/again). The live app is [again-fl36.onrender.com](https://again-fl36.onrender.com) on Render Free. The Docker/Linux build passed remote readiness with seven seed documents; 14/14 live API checks passed. The validated [source commit is `99a098b`](https://github.com/AngRoy/again/tree/99a098b99733a2a99511b1407410fd9eaf02a1d8); later documentation commits can differ. The default-input browser checks and recording also passed; their evidence is recorded separately in the submission status. The initial real text-retrieval diagnostic ran on Windows and is not evidence of a working Linux deployment.
 
 A portable Dockerfile targets `app.main:app` on port 7860. Render is the deployed cloud target; the Docker build and real native readiness check passed. The initial Windows probe is not a substitute for validating the Linux container. Runtime credentials are private service environment variables, not committed to this repository. [Render Docker deployment](https://render.com/docs/docker), [Render environment variables](https://render.com/docs/configure-environment-variables)
 

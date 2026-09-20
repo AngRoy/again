@@ -15,3 +15,11 @@ runtime/
 .DS_Store
 
 .runtime/
+
+demo/raw/
+
+tests/artifacts/
+
+demo/previous_take/
+
+demo/final_take/

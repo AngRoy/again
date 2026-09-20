@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-09-20T16:17:39.680097+00:00",
+  "app_url": "https://again-fl36.onrender.com",
+  "provider": "Render",
+  "plan": "free",
+  "region": "oregon",
+  "documented_resources": {
+    "cpu": 0.1,
+    "memory_label": "512 MB",
+    "source": "https://render.com/docs/blueprint-spec"
+  },
+  "deployed_source_commit": "99a098b99733a2a99511b1407410fd9eaf02a1d8",
+  "deploy_finished_at_utc": "2026-09-20T16:15:06.899262Z",
+  "cold_ready_ms_single_observation": 11049.379,
+  "metric_name": "Render service memory usage",
+  "metric_source": "https://api-docs.render.com/reference/get-memory",
+  "samples_after_utc": "2026-09-20T16:15:07Z",
+  "series": [
+    {
+      "series_number": 1,
+      "unit": "bytes",
+      "samples": [
+        {
+          "timestamp": "2026-09-20T16:16:00Z",
+          "value": 224358400
+        },
+        {
+          "timestamp": "2026-09-20T16:17:00Z",
+          "value": 225140740
+        }
+      ]
+    }
+  ],
+  "maximum_observed_sample_bytes": 225140740,
+  "limitations": [
+    "Provider-sampled service memory; not Python RSS and not an upper bound on peak memory.",
+    "Only samples after the repaired deployment became live are included; no deliberate load or capacity test was run.",
+    "Free instances sleep after 15 minutes without inbound traffic; wakeup delay and loss of ephemeral session additions are expected.",
+    "Cold readiness is one application startup observation, not a distribution of HTTP cold starts."
+  ]
+}

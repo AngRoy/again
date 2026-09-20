@@ -4,9 +4,9 @@
 
 Again is a small troubleshooting-memory agent. Genuine Moss text retrieval finds relevant incident memories; an explicit policy checks their stage and conditions before showing one recorded next step, a clarifying question, or no applicable memory. Evidence includes failed attempts and the outcome's actual status.
 
-[Repository](https://github.com/AngRoy/again) | [Product requirements](PRD.md) | [Architecture](ARCHITECTURE.md) | [Demo script](DEMO_AND_SUBMISSION.md) | [Submission status](SUBMISSION_READY.md)
+[Repository](https://github.com/AngRoy/again) | [Product requirements](PRD.md) | [Architecture](ARCHITECTURE.md) | [Demo script](DEMO_AND_SUBMISSION.md) | [Submission status](SUBMISSION_READY.md) | [93-second demo](https://github.com/AngRoy/again/releases/download/v1.0.0/again-demo.webm)
 
-**Live demo:** [again-fl36.onrender.com](https://again-fl36.onrender.com). The Linux cloud service has passed genuine Moss startup and remote readiness checks. Full app acceptance is being completed; see [submission status](SUBMISSION_READY.md). Render Free can sleep after 15 idle minutes, so first access may need a platform restart and Moss warmup. [Render Free limits](https://render.com/docs/free)
+**Live demo:** [again-fl36.onrender.com](https://again-fl36.onrender.com). The Linux cloud service passed 14/14 genuine API checks and 47 automated app tests. The default-input browser flow and the silent captioned video also passed their checks; see [submission status](SUBMISSION_READY.md). Render Free can sleep after 15 idle minutes, so first access may need a platform restart and Moss warmup. [Render Free limits](https://render.com/docs/free)
 
 ## Why Again
 
@@ -39,8 +39,8 @@ On Linux, use `.venv/bin/python` for the same commands. The included Dockerfile 
 1. Choose **Try a real incident**, or paste a short error without secrets.
 2. Give the failure stage and current conditions when known. Click **Recall a fix**.
 3. Read the next step, previous failed attempts, status and source excerpts. Expand the live timing panel for retrieved IDs and query/API/browser timing.
-4. Use **Teach an outcome** to store a session-local, explicitly user-reported result. Then describe it differently and recall it again.
-5. Use **Forget my session** to remove that session's additions. Turning memory off performs no retrieval and says that history is unavailable.
+4. Expand **Make the next time easier** and use **Save to my memory** to store a session-local, explicitly user-reported result. Then describe it differently and recall it again.
+5. Use **Clear my additions** to remove that session's additions. Turning memory off performs no retrieval and says that history is unavailable.
 
 Examples only fill the input. They do not select an answer or inject saved search results. The decision policy consumes incident IDs actually returned by Moss.
 
@@ -48,7 +48,7 @@ Examples only fill the input. They do not select an answer or inject saved searc
 
 The public demo sends pasted text to its backend. Use sample errors. This is not on-device processing in the browser. Self-hosting keeps application inputs on your own host, subject to Moss authentication, model downloads and SDK usage telemetry; complete offline or network-silent operation is not claimed.
 
-Seed memory is shared and read-only. New outcomes use a separate private Moss index with a mandatory server-generated visitor filter and an ownership check after retrieval. An opaque HttpOnly, SameSite=Lax cookie identifies a visitor; there is no public listing of taught outcomes. Additions are held in RAM, expire after 60 minutes of inactivity, and disappear when the server restarts. At most 100 visitor sessions and five additions per visitor are allowed. Forget deletes the current visitor's indexed additions. Expired indexed additions are deleted at the next memory operation.
+Seed memory is shared and read-only. New outcomes use a separate private Moss index with a mandatory server-generated visitor filter and an ownership check after retrieval. An opaque HttpOnly, SameSite=Lax cookie identifies a visitor; there is no public listing of taught outcomes. Additions are held in RAM, expire after 60 minutes of inactivity, and disappear when the server restarts. At most 100 visitor sessions and five additions per visitor are allowed. Each visitor has a 30-request-per-minute limit. Forget deletes the current visitor's indexed additions. Expired indexed additions are deleted at the next memory operation.
 
 Queries are not logged by application code. Hosting/network infrastructure may have its own operational logs. Credentials stay in server-side environment configuration. Inputs and excerpts are rendered as text; there is no shell, upload, filesystem-browser, or arbitrary-command endpoint.
 
@@ -56,7 +56,7 @@ Input bounds are 4,000 characters for a query, 1,200 for conditions, and a 16 Ki
 
 ## What the evidence establishes
 
-This application has its own checks and measurements; prior research test totals and throughput results are not app claims. The initial two-document Windows text-retrieval diagnostic observed a 10.69 ms query and 9.194 s session opening. Those are single diagnostic observations, include the relevant SDK work, and are not deployed median/p95 performance. Final remote checks belong in the submission status.
+The deployed [source commit `99a098b`](https://github.com/AngRoy/again/tree/99a098b99733a2a99511b1407410fd9eaf02a1d8) passed 14/14 live API checks, including genuine teaching, visitor separation, deletion and memory off. Separately, 47 automated app tests passed. The ten seed-only requests observed an 8.342 ms median combined retrieval interval; two requests that searched both indexes observed 12.776 and 42.285 ms. These small functional samples include embedding and are not latency guarantees. [Measurements, limitations and reproduction](measurements/MEASUREMENTS.md).
 
 Recall depends on the incident corpus, semantic retrieval, and the supplied conditions. A reported remedy can still be inapplicable. Diagnosed, partially resolved, unresolved and user-reported outcomes retain those labels. Again proposes a next step; it does not execute a fix or diagnose arbitrary errors. Visitor notes also require two meaningful shared condition terms or one specific shared technical identifier after semantic retrieval. This conservative check can miss valid paraphrases; it only enables a condition-check question, never a verified repair claim.
 

@@ -1,4 +1,4 @@
-# Again ? Product Requirements Document
+# Again - Product Requirements Document
 
 **Promise:** Paste an error. Recover what you tried. Take the next step.
 
@@ -22,7 +22,7 @@ After recall, show:
 - **What matches:** the current stage and conditions supported by retrieved evidence.
 - **What was already tried:** failed actions actually recorded for those conditions.
 - **Evidence:** clickable excerpts with their source labels and outcome status.
-- **Live details:** actual native query timing and retrieved IDs, API time and browser round-trip time in an expandable panel.
+- **Live details:** actual combined Moss retrieval timing and retrieved IDs, API time and browser round-trip time in an expandable panel.
 
 Example buttons only populate the form. Genuine Moss retrieval must run when the user submits with memory enabled.
 
@@ -32,7 +32,7 @@ Example buttons only populate the form. Genuine Moss retrieval must run when the
 |---|---|
 | Elevated helper-launch failure | Retrieve the recorded `unelevated_worker_ready` case, recognize that administrator preflight passed, and avoid another elevation retry as the remedy. |
 | Non-admin preflight failure | Retrieve the different controller-token case and propose checking/elevating only the separate controller. |
-| Ambiguous ?Access is denied? | Ask which stage failed; do not infer an applicable remedy from similarity alone. |
+| Ambiguous "Access is denied" | Ask which stage failed; do not infer an applicable remedy from similarity alone. |
 | Unrelated input | Show no applicable memory or relevant evidence with an explicit unresolved applicability question. |
 | Previous failure | Show the actual failed action and its outcome; do not invent prior attempts. |
 | Partial repair | Say that ordinary-worker startup was repaired while the later trace remained unresolved. |
@@ -47,7 +47,7 @@ Tests must exercise these actual critical flows. This app cannot inherit researc
 
 Moss `moss-minilm` provides built-in text embeddings and live incident retrieval. Seven public-safe historical records are immutable seeds. The separate fictional teaching template is not pre-indexed as a verified incident. Each incident contains a stage, current-condition requirements, observations, recorded failed actions, one next step, limitations and source excerpts.
 
-A bounded, explicit policy examines records returned by Moss. Data-defined stage aliases and condition signals establish applicability; missing or contradictory facts lead to clarification. Explicit current stage takes precedence over inferred wording. A vector score is a retrieval signal, not a calibrated probability that a remedy is correct. The policy does not return hardcoded answers for example-button text.
+A bounded, explicit policy examines records returned by Moss. Data-defined stage aliases and condition signals establish applicability; missing or contradictory facts lead to clarification. Explicit current stage takes precedence over inferred wording. A vector score is a retrieval signal, not a calibrated probability that a remedy is correct. The policy does not return hardcoded answers for example-button text. Visitor notes also require two meaningful shared condition terms or one specific shared technical identifier after semantic retrieval. This conservative check can miss valid paraphrases; it only enables a condition-check question, never a verified repair claim.
 
 Resolved-in-recorded-environment, diagnosed, partially resolved, unresolved and user-reported are distinct outcomes. An unchanged error in an already elevated controller is not evidence that elevation failed. A startup timeout does not prove that a UAC prompt was refused or even visible.
 
@@ -57,7 +57,7 @@ Included: sanitized seeds, free-text recall, recorded attempts, source excerpts,
 
 Excluded: command execution, automatic repair, uploads, accounts, integrations, general chat, training, new inference experiments, tracing, or claims of SSD/inference acceleration.
 
-Public-demo input goes to its server. Self-hosting runs application processing on the user's host; Moss startup can authenticate or download a model. No full-offline claim is made. New records are session-local RAM state with a 60-minute expiry, five-addition limit and a maximum of 100 visitor sessions. They do not persist across restarts. The app does not log pasted query text.
+Public-demo input goes to its server. Self-hosting runs application processing on the user's host; Moss startup can authenticate or download a model. No full-offline claim is made. New records are session-local RAM state with a 60-minute inactivity expiry, five-addition limit and a maximum of 100 visitor sessions. They do not persist across restarts. The app does not log pasted query text.
 
 The API bounds request bodies, text lengths and queued work. These measures keep a small public demonstration manageable; they are not a claim of production security or comprehensive debugging intelligence.
 
@@ -65,4 +65,4 @@ The API bounds request bodies, text lengths and queued work. These measures keep
 
 Verify at least three paraphrases, stage disambiguation, ambiguity, unrelated input, genuine teach/recall, visitor separation, and memory-off behavior. Record the actual shipped build's query/API/browser timings, readiness and retrieved incident IDs. Do not invent a latency target or optimize around a scripted answer.
 
-Submission requires a working public agent URL, standalone source repository, this PRD, the architecture image and a real demonstration video. A temporary tunnel must be disclosed and kept alive. Freeze features thirty minutes before the submission deadline, then prioritize working links and the recording.
+Submission requires a working public agent URL, standalone source repository, this PRD, the architecture image and a real demonstration video. The live agent must use durable cloud hosting. Freeze features thirty minutes before the submission deadline, then prioritize working links and the recording.

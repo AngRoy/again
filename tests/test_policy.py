@@ -1,4 +1,4 @@
-﻿"""Policy and API checks use isolated fakes; live Moss checks are recorded separately."""
+"""Policy and API checks use isolated fakes; live Moss checks are recorded separately."""
 import json
 from pathlib import Path
 import pytest
@@ -86,3 +86,52 @@ def test_explicit_matching_os_and_negated_other_os_preserve_verified_case():
 
 def test_platform_word_alone_cannot_turn_unrelated_history_into_a_diagnosis():
     assert run('How do I cook broccoli on Linux?',list(BYID))['state']=='no_match'
+
+
+TAUGHT_PORT = {'id': 'visitor_note', 'provenance_class': 'visitor_reported',
+              'search_text': 'The browser refuses the connection at localhost:3000. The terminal says the development server is ready at localhost:3001.',
+              'conditions': 'The browser is on port 3000; the terminal reports the server on port 3001.',
+              'observations': ['User-reported outcome: roast broccoli with lemon.']}
+
+
+def taught_result(text, record=TAUGHT_PORT):
+    return decide([record], analyze(RECORDS, text))
+
+
+def test_taught_semantic_paraphrase_gets_a_condition_question():
+    result=taught_result('The local server is healthy on a new port, but my old browser bookmark cannot connect.')
+    assert result['state']=='clarify'
+    assert result['matched_id']=='visitor_note'
+    assert not result['failed_attempts']
+
+
+def test_unrelated_query_after_teaching_abstains_despite_native_neighbor():
+    result=taught_result('How do I roast broccoli for dinner?')
+    assert result['state']=='no_match'
+    assert result['matched_id'] is None
+
+
+def test_taught_outcome_words_do_not_establish_current_conditions():
+    assert taught_result('roast broccoli with lemon')['state']=='no_match'
+
+
+def test_taught_one_specific_port_identifier_supports_only_clarification():
+    result=taught_result('Port 3001 stopped responding.')
+    assert result['state']=='clarify'
+    assert 'independently verified' in result['what_matches'][0]
+
+
+def test_taught_generic_error_words_are_not_condition_evidence():
+    record={**TAUGHT_PORT,'search_text':'The app has an error. This failed after the last attempt.'}
+    assert taught_result('This app error failed after the last attempt.',record)['state']=='no_match'
+
+
+def test_taught_similarity_cannot_create_a_record_absent_from_retrieval():
+    c=analyze(RECORDS,'My browser cannot connect to the local server.')
+    assert decide([],c)['state']=='no_match'
+
+
+
+def test_uppercase_error_word_is_not_a_specific_identifier():
+    record={**TAUGHT_PORT,'search_text':'ERROR in this app.'}
+    assert taught_result('ERROR happened.',record)['state']=='no_match'

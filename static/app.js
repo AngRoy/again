@@ -22,7 +22,7 @@
     ['unelevated_worker_ready', 'Ordinary worker launch'], ['administrator_preflight', 'Administrator preflight'],
     ['controller_startup_wait', 'Controller startup confirmation'], ['moss_authentication', 'Moss authentication'],
     ['native_sdk_bootstrap', 'Native SDK initialization'], ['first_dense_query', 'First dense query'],
-    ['extraction_ram_preflight', 'Extraction RAM preflight'], ['browser_connect', 'Browser connection']
+    ['extraction_ram_preflight', 'Extraction RAM preflight']
   ];
   function announce(message) { $('announcer').textContent = message; }
   function note(id, message, isError = false) {
@@ -143,3 +143,118 @@
       details.append(body); $('evidence-list').append(details);
     });
   }
+  function renderMetrics(data, browserMs) {
+    const container = $('metrics-content'); container.replaceChildren(); $('metrics-panel').hidden = false;
+    const grid = make('dl', 'metric-grid'); const timing = data.timings || {};
+    const values = [['Moss query + embedding', elapsed(timing.moss_query_ms)], ['Backend API', elapsed(timing.api_ms)], ['Browser round trip', elapsed(browserMs)]];
+    values.forEach(([label, value]) => { const item = make('div', 'metric-item'); item.append(make('dt', '', label), make('dd', '', value)); grid.append(item); });
+    container.append(grid);
+    const counts = Number.isInteger(data.native_query_count) ? ` Native query calls: ${data.native_query_count}.` : '';
+    container.append(make('p', 'metric-note', `Actual measurements for this request. Moss timing includes query embedding; browser time includes the network and response parsing.${counts} Scores are retrieval scores, not confidence probabilities.`));
+    if (numeric(state.health?.cold_ready_ms)) container.append(make('p', 'metric-note', `Backend cold readiness: ${elapsed(state.health.cold_ready_ms)}, measured separately at startup. Model: ${text(state.health.model) || 'not reported'}.`));
+    const retrieved = list(data.retrieved); const rows = make('div', 'retrieved-list');
+    if (!retrieved.length) rows.append(make('p', '', data.state === 'memory_off' ? 'Retrieval disabled for this request. No incident IDs returned.' : 'No incident IDs returned.'));
+    retrieved.forEach(item => rows.append(make('p', '', `${text(item.id)} / score ${numeric(item.score) ? item.score.toFixed(6) : 'not reported'}`)));
+    container.append(rows);
+  }
+  function renderResult(data, browserMs) {
+    const allowed = ['matched', 'clarify', 'no_match', 'memory_off'];
+    if (!allowed.includes(data.state) || typeof data.next_step !== 'string') throw new Error('The response did not contain a valid evidence decision. Please try again.');
+    const evidence = list(data.evidence); renderEvidence(evidence);
+    const selected = evidence.find(item => item.id === data.matched_id) || evidence.find(item => item.applicable === true);
+    const content = $('result-content'); content.replaceChildren(); const kind = { matched: 'A relevant memory', clarify: 'One detail first', no_match: 'No applicable memory', memory_off: 'Memory is off' }[data.state];
+    const eyebrow = make('div', 'result-eyebrow'); eyebrow.append(make('span', 'result-kind', kind));
+    if (selected?.status) eyebrow.append(badge(selected.status, selected.is_synthetic === true));
+    content.append(eyebrow, make('h3', 'result-headline', text(data.headline) || { matched: 'Past experience, with context.', clarify: 'Same error. Which stage?', no_match: 'There is no grounded fix to recall yet.', memory_off: 'Past outcomes are unavailable.' }[data.state]));
+    const matches = list(data.what_matches);
+    if (matches.length) { const section = make('section', 'result-matches'); section.append(make('h4', 'mini-title', 'What matches')); const ul = make('ul', 'match-list'); paragraphs(ul, matches, 'li'); section.append(ul); content.append(section); }
+    const next = make('section', 'next-step'); next.append(make('h4', 'mini-title', data.state === 'clarify' ? 'Clarify before another fix' : 'Your next step'), make('p', '', data.next_step));
+    if (selected) next.append(sourceLinks(list(selected.sources).map(source => source.id)));
+    content.append(next);
+    const attempts = list(data.failed_attempts);
+    if (attempts.length) {
+      const section = make('section', 'attempts-section'); section.append(make('h4', 'mini-title', `Already tried / ${attempts.length} recorded ${attempts.length === 1 ? 'attempt' : 'attempts'}`));
+      attempts.forEach(attempt => { const row = make('div', 'attempt'); row.append(make('h4', '', text(attempt.action)), make('p', '', text(attempt.outcome)), sourceLinks(attempt.source_ids)); section.append(row); });
+      content.append(section);
+    }
+    const limits = list(data.limits).length ? data.limits : list(selected?.limits);
+    if (limits.length) { const section = make('aside', 'result-limit'); section.append(make('strong', '', 'Keep the limits in view')); const ul = make('ul'); paragraphs(ul, limits, 'li'); section.append(ul); content.append(section); }
+    $('result-panel').dataset.state = data.state; $('result-empty').hidden = true; $('result-loading').hidden = true; content.hidden = false; $('result-stale').hidden = true;
+    renderMetrics(data, browserMs); if (data.state === 'clarify') $('context-details').open = true;
+    $('result-title').focus({ preventScroll: true });
+    if (matchMedia('(max-width: 760px)').matches) $('result-panel').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    announce(`${kind}. ${data.next_step}`);
+  }
+  function clearResult() {
+    $('result-empty').hidden = false; $('result-loading').hidden = true; $('result-content').hidden = true;
+    $('result-content').replaceChildren(); $('evidence-list').replaceChildren(); $('evidence-panel').hidden = true; $('metrics-panel').hidden = true; $('result-stale').hidden = true; $('result-panel').dataset.state = 'empty'; state.sources.clear();
+  }
+  function markStale() { if (!$('result-content').hidden) $('result-stale').hidden = false; }
+  async function recall(event) {
+    event?.preventDefault(); if (state.recallBusy || state.teachBusy || state.forgetting || !$('recall-form').reportValidity()) return;
+    const query = $('query').value.trim(); if (!query) { note('recall-error', 'Describe the error or symptom first.', true); $('query').focus(); return; }
+    const memoryEnabled = $('memory-enabled').checked;
+    const payload = { query, stage: $('stage').value || null, conditions: $('conditions').value.trim(), memory_enabled: memoryEnabled };
+    state.recallBusy = true; updateButtons(); note('recall-error', ''); note('example-feedback', ''); clearResult();
+    $('result-panel').dataset.state = 'loading'; $('result-panel').setAttribute('aria-busy', 'true'); $('result-empty').hidden = true; $('result-loading').hidden = false;
+    $('loading-title').textContent = memoryEnabled ? 'Recalling your incident memory' : 'Checking without incident memory';
+    $('loading-copy').textContent = memoryEnabled ? 'Searching with Moss, then checking the conditions.' : 'Retrieval is disabled for this request.';
+    announce(memoryEnabled ? 'Searching the live incident memory.' : 'Submitting with memory disabled.');
+    try { const { data, browserMs } = await request('/api/recall', payload); renderResult(data, browserMs); }
+    catch (error) { clearResult(); note('recall-error', error.message, true); announce(error.message); }
+    finally { state.recallBusy = false; $('result-panel').setAttribute('aria-busy', 'false'); updateButtons(); }
+  }
+  function fillTeaching() {
+    const example = state.teachingExample; if (!example) return;
+    $('teach-symptom').value = text(example.symptom); $('teach-conditions').value = text(example.conditions);
+    $('teach-action').value = text(example.attempted_action); $('teach-outcome').value = text(example.outcome);
+    $('teach-synthetic').checked = true; $('teach-panel').open = true; $('teach-symptom').focus();
+    note('teach-message', 'Fictional example filled. Save it to index this new user-reported memory.'); $('recall-taught').hidden = true;
+  }
+  async function teach(event) {
+    event.preventDefault(); if (state.teachBusy || state.recallBusy || state.forgetting || !$('teach-form').reportValidity()) return;
+    const payload = { symptom: $('teach-symptom').value.trim(), conditions: $('teach-conditions').value.trim(), attempted_action: $('teach-action').value.trim(), outcome: $('teach-outcome').value.trim(), is_synthetic: $('teach-synthetic').checked };
+    if ([payload.symptom, payload.conditions, payload.attempted_action, payload.outcome].some(value => !value)) { note('teach-message', 'Complete all four fields so this memory has useful context.', true); return; }
+    state.teachBusy = true; updateButtons(); $('teach-button').textContent = 'Indexing your memory...'; note('teach-message', 'Saving and indexing with Moss.'); $('recall-taught').hidden = true;
+    try {
+      const { data } = await request('/api/teach', payload, 60000);
+      if (data.indexed !== true) throw new Error(text(data.message) || 'The server did not confirm indexing. This outcome has not been shown as saved.');
+      state.lastTeaching = { ...payload, id: data.id };
+      note('teach-message', `${text(data.message) || 'Indexed with Moss and saved for your session.'} ${payload.is_synthetic ? 'Fictional / user reported.' : 'User reported; not independently verified.'}`);
+      $('recall-taught').hidden = false; announce('Your outcome was indexed. Try recalling it in different words.'); await refreshHealth();
+    } catch (error) { note('teach-message', error.message, true); }
+    finally { state.teachBusy = false; $('teach-button').textContent = 'Save to my memory +'; updateButtons(); }
+  }
+  async function forget() {
+    if (state.forgetting || state.teachBusy || state.recallBusy) return;
+    state.forgetting = true; updateButtons(); $('forget-button').textContent = 'Clearing...';
+    try {
+      const { data } = await request('/api/forget', {}, 30000);
+      if (data.ok === false) throw new Error(text(data.message) || 'Your additions could not be cleared.');
+      state.lastTeaching = null; $('teach-form').reset(); $('recall-taught').hidden = true; clearResult();
+      note('teach-message', text(data.message) || 'Your session additions were cleared. The original recorded incidents remain.'); announce('Your session additions were cleared.'); await refreshHealth();
+    } catch (error) { note('teach-message', error.message, true); }
+    finally { state.forgetting = false; $('forget-button').textContent = 'Clear my additions'; updateButtons(); }
+  }
+  $('recall-form').addEventListener('submit', recall); $('teach-form').addEventListener('submit', teach);
+  $('query').addEventListener('input', () => { updateCount(); markStale(); });
+  [$('stage'), $('conditions')].forEach(input => input.addEventListener('input', markStale));
+  $('query').addEventListener('keydown', event => { if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); $('recall-form').requestSubmit(); } });
+  $('memory-enabled').addEventListener('change', () => { $('memory-description').textContent = $('memory-enabled').checked ? 'Retrieve past outcomes with Moss' : 'Next recall will skip retrieval'; markStale(); });
+  $('condition-preset').addEventListener('change', () => { if ($('condition-preset').value) { $('conditions').value = $('condition-preset').value; markStale(); } });
+  $('try-example').addEventListener('click', () => { chooseExample(state.examples.find(example => example.id === 'elevated_controller_worker_launch_denied') || state.examples[0]); markStale(); });
+  $('example-select').addEventListener('change', () => { if ($('example-select').value !== '') { chooseExample(state.examples[Number($('example-select').value)]); markStale(); } });
+  $('fill-teaching').addEventListener('click', fillTeaching); $('forget-button').addEventListener('click', forget);
+  $('recall-taught').addEventListener('click', () => {
+    $('query').value = ''; $('stage').value = ''; $('conditions').value = ''; $('condition-preset').value = ''; $('context-details').open = true;
+    $('query').placeholder = 'Describe the saved problem in different words...'; updateCount(); markStale(); $('query').focus();
+    $('query').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    note('example-feedback', 'Ask in your own words. Include the conditions that made the outcome applicable.');
+  });
+  const stale = make('p', 'stale-notice', 'Inputs changed. Recall again to update this result.'); stale.id = 'result-stale'; stale.hidden = true; stale.setAttribute('role', 'status'); $('result-panel').children[0].after(stale);
+  stageFallbacks.forEach(([value, label]) => addStage(value, label));
+  if (/Mac|iPhone|iPad/.test(navigator.platform)) $('submit-shortcut').textContent = '\u2318 \u21b5';
+  $('try-example').disabled = true; $('fill-teaching').disabled = true;
+  updateCount(); updateButtons(); refreshHealth().then(loadExamples);
+  window.addEventListener('pagehide', () => window.clearTimeout(state.healthTimer));
+})();

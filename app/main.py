@@ -99,6 +99,11 @@ async def health():
     return {'status': 'ready' if memory.ready else ('error' if memory.error else 'starting'), 'ready': memory.ready, 'model': 'moss-minilm', 'seed_count': len(memory.records), 'teaching_enabled': True, 'cold_ready_ms': memory.cold_ready_ms, 'message': memory.error or ('Genuine Moss text retrieval is ready.' if memory.ready else 'Warming the Moss embedding model.'), 'storage': 'Ephemeral, visitor-isolated additions; one hour of inactivity or restart.', 'version': '1.0.0'}
 
 
+@app.get('/api/ready')
+async def ready():
+    return JSONResponse({'ready': memory.ready, 'model': 'moss-minilm'}, status_code=200 if memory.ready else 503)
+
+
 @app.get('/api/examples')
 async def examples():
     order = ['elevated_controller_worker_launch_denied', 'trace_controller_not_elevated', 'moss_torch_import_order', 'numpy_first_query_commit_jump', 'extraction_ram_preflight']

@@ -1,4 +1,4 @@
-﻿"""A small applicability policy. Facts gate native-retrieved memories, never replace retrieval."""
+"""A small applicability policy. Facts gate native-retrieved memories, never replace retrieval."""
 import re
 
 
@@ -27,7 +27,47 @@ def analyze(records, query, conditions='', stage=None):
             if not re.search(r'\b(?:not|never)(?:\s+(?:on|running|using))?\s*$', before, re.I):
                 platforms.add(name)
     # An explicit stage identifies a stage, not the truth of its prerequisites.
-    return {'stage': stage or None, 'inferred_stages': inferred, 'facts': facts, 'labels': labels, 'platforms': platforms}
+    return {'stage': stage or None, 'inferred_stages': inferred, 'facts': facts, 'labels': labels, 'platforms': platforms, 'input_text': text}
+
+
+# A conservative condition check follows semantic retrieval for new visitor notes.
+# It is intentionally not an embedding-score threshold or a success classifier.
+_COMMON_TERMS = set("""the and for with from that this these those then than into about after
+before during when where which what why how was were are has have had can could would should
+will your you our their its not only also just more most some any all but now again please help
+error errors failed failure failing fails fail problem issue tried try attempt attempts action
+outcome result results recorded reported current same different work works working does did done
+app application system says said ready uses used using use need needs happens happened memory
+note stored condition conditions symptom symptoms good bad old new still really very much one
+last time seem seems show shows get gets got give here there without because other want today
+""".split())
+
+
+def _condition_terms(text):
+    return {word for word in re.findall(r'[a-z][a-z0-9_]{2,}', text.lower())
+            if word not in _COMMON_TERMS}
+
+
+def _technical_identifiers(text):
+    # Ports in either "localhost:3001" or "port 3001" form, error codes and
+    # concrete source/config filenames provide a more specific shared anchor.
+    lowered = text.lower()
+    result = {'port:' + m.group(1) for m in re.finditer(r'(?:\bport\s*[:=]?\s*|[a-z0-9._-]+:)([0-9]{2,5})\b', lowered)}
+    patterns = [r'\b0x[0-9a-f]{4,}\b',
+                r'\b(?:http|errno|error)[ _:-]*[0-9]{3,}\b',
+                r'\b[a-z0-9_.-]+\.(?:py|js|ts|tsx|jsx|json|yaml|yml|toml|ini|cfg|dll|so|exe)\b']
+    for pattern in patterns:
+        result.update(re.findall(pattern, lowered))
+    result.update(m.lower() for m in re.findall(r'\b[A-Z][A-Z_]{1,}[0-9]{3,}\b', text))
+    return result
+
+
+def visitor_conditions_grounded(record, input_text):
+    # search_text is built only from symptom + conditions. Never use a proposed
+    # action or claimed outcome to manufacture evidence of current applicability.
+    recorded = record.get('search_text', '')
+    return (len(_condition_terms(recorded) & _condition_terms(input_text)) >= 2
+            or bool(_technical_identifiers(recorded) & _technical_identifiers(input_text)))
 
 
 def decide(retrieved_records, context):
@@ -74,6 +114,6 @@ def decide(retrieved_records, context):
     if not context['stage'] and len(stages) > 1 and context.get('permission_error'):
         return {**empty, 'state': 'clarify', 'headline': 'The failure stage matters', 'next_step': 'Which stage failed: administrator preflight, ordinary-worker launch, or waiting for controller startup?', 'what_matches': ['Similar wording appears in memories with different prerequisites.']}
     taught = next((r for r in retrieved_records if r.get('provenance_class') == 'visitor_reported'), None)
-    if taught and retrieved_records[0]['id'] == taught['id']:
+    if taught and retrieved_records[0]['id'] == taught['id'] and visitor_conditions_grounded(taught, context.get('input_text', '')):
         return {**empty, 'state': 'clarify', 'headline': 'A similar outcome you recorded', 'matched_id': taught['id'], 'next_step': 'Do these recorded conditions match your current case? ' + taught['conditions'], 'what_matches': ['Moss retrieved your session memory. Its reported outcome is shown below; it has not been independently verified.']}
     return empty

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: again
+    runtime: docker
+    plan: free
+    region: oregon
+    repo: https://github.com/AngRoy/again
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: off
+    healthCheckPath: /api/ready
+    envVars:
+      - key: PORT
+        value: "7860"
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
+      - key: MOSS_PROJECT_ID
+        sync: false
+      - key: MOSS_PROJECT_KEY
+        sync: false

@@ -58,13 +58,14 @@ Input bounds are 4,000 characters for a query, 1,200 for conditions, and a 16 Ki
 
 This application has its own checks and measurements; prior research test totals and throughput results are not app claims. The initial two-document Windows text-retrieval diagnostic observed a 10.69 ms query and 9.194 s session opening. Those are single diagnostic observations, include the relevant SDK work, and are not deployed median/p95 performance. Final remote checks belong in the submission status.
 
-Recall depends on the incident corpus, semantic retrieval, and the supplied conditions. A reported remedy can still be inapplicable. Diagnosed, partially resolved, unresolved and user-reported outcomes retain those labels. Again proposes a next step; it does not execute a fix or diagnose arbitrary errors.
+Recall depends on the incident corpus, semantic retrieval, and the supplied conditions. A reported remedy can still be inapplicable. Diagnosed, partially resolved, unresolved and user-reported outcomes retain those labels. Again proposes a next step; it does not execute a fix or diagnose arbitrary errors. Visitor notes also require two meaningful shared condition terms or one specific shared technical identifier after semantic retrieval. This conservative check can miss valid paraphrases; it only enables a condition-check question, never a verified repair claim.
 
 ## API
 
 - `POST /api/recall`: query, optional stage/conditions, and `memory_enabled`.
 - `POST /api/teach`: symptom, conditions, attempted action, outcome, and `is_synthetic`.
 - `POST /api/forget`: remove this visitor's additions.
-- Health/examples routes expose public readiness and sanitized sample inputs; exact routes are verified with the shipped API.
+- `GET /api/health`: public readiness after a real warm query.
+- `GET /api/examples`: sanitized sample input text.
 
-All UI requests use ordinary JSON. Moss query timing includes local embedding when performed inside the SDK call. API time and browser round-trip time are separate. No artificial delay or recorded timing is presented as a live result.
+All UI requests use ordinary JSON. The combined Moss retrieval interval includes local embedding and result assembly; one or two actual queries are counted. API time and browser round-trip time are separate. No artificial delay or recorded timing is presented as a live result.

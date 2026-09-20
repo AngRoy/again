@@ -1,4 +1,4 @@
-﻿"""Genuine Moss text sessions, serial native operations, and bounded visitor isolation."""
+"""Genuine Moss text sessions, serial native operations, and bounded visitor isolation."""
 import asyncio
 from contextlib import asynccontextmanager
 import hashlib
@@ -134,7 +134,7 @@ class MossMemory:
             raise BusyError('This session already has five memories. Clear them to start again.')
         rid = 'memory_' + uuid.uuid4().hex
         label = 'Fictional demonstration' if data['is_synthetic'] else 'Your reported incident'
-        record = {'id': rid, 'title': label + ': ' + data['symptom'][:90], 'search_text': data['symptom'] + ' ' + data['conditions'], 'stage': 'user_reported', 'status': 'synthetic_user_reported_resolved' if data['is_synthetic'] else 'user_reported', 'is_synthetic': data['is_synthetic'], 'provenance_class': 'visitor_reported', 'conditions': data['conditions'], 'observations': ['Symptom: ' + data['symptom'], 'Conditions: ' + data['conditions'], 'Attempted action: ' + data['attempted_action'], 'User-reported outcome: ' + data['outcome']], 'failed_attempts': [], 'next_step': 'Compare your current conditions with this user-reported outcome before reusing the action.', 'limits': ['User-reported; not independently verified.', 'Visible only in this browser session; expires after one hour of inactivity or a server restart.'], 'sources': [{'id': rid + '_note', 'document': 'Your session note', 'section': label, 'excerpt': '\n'.join([data['symptom'], data['conditions'], data['attempted_action'], data['outcome']]), 'excerpt_type': 'fictional_note' if data['is_synthetic'] else 'user_report'}]}
+        record = {'id': rid, 'title': label + ': ' + data['symptom'][:90], 'search_text': data['symptom'] + ' ' + data['conditions'], 'stage': 'user_reported', 'status': 'synthetic_user_reported' if data['is_synthetic'] else 'user_reported', 'is_synthetic': data['is_synthetic'], 'provenance_class': 'visitor_reported', 'conditions': data['conditions'], 'observations': ['Symptom: ' + data['symptom'], 'Conditions: ' + data['conditions'], 'Attempted action: ' + data['attempted_action'], 'User-reported outcome: ' + data['outcome']], 'failed_attempts': [], 'next_step': 'Compare your current conditions with this user-reported outcome before reusing the action.', 'limits': ['User-reported; not independently verified.', 'Visible only in this browser session; expires after one hour of inactivity or a server restart.'], 'sources': [{'id': rid + '_note', 'document': 'Your session note', 'section': label, 'excerpt': '\n'.join([data['symptom'], data['conditions'], data['attempted_action'], data['outcome']]), 'excerpt_type': 'fictional_note' if data['is_synthetic'] else 'user_report'}]}
         started = time.perf_counter()
         await finish_native(self.private.add_docs([self.sdk.DocumentInfo(id=rid, text=self.document_text(record), metadata={'visitor_id': visitor['id']})]))
         visitor['records'][rid] = record

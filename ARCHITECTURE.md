@@ -12,7 +12,7 @@ Again combines genuine text retrieval with an explicit evidence-applicability po
 4. The policy checks stage and required facts, rejects contradictions, and returns one recorded next step, one clarification or no applicable memory. Evidence excerpts and status remain visible.
 5. Teaching indexes a visitor-scoped, user-reported record. Forget removes that visitor's additions. Taught outcomes are ephemeral and are not promoted to independently verified history. Visitor notes also require two meaningful shared condition terms or one specific shared technical identifier after semantic retrieval. This conservative check can miss valid paraphrases; it only enables a condition-check question, never a verified repair claim.
 
-Moss sessions support local in-process indexing and text querying. Model selection occurs at session creation; the SDK validates project credentials on opening. The app uses `moss-minilm` and does not call cloud index upload. Startup/authentication/download behavior remains a separate network boundary. [Official Moss session documentation](https://docs.moss.dev/docs/reference/python/sessions)
+Moss sessions support local in-process indexing and text querying. Model selection occurs at session creation; the SDK validates project credentials on opening. The app uses `moss-minilm` and does not call cloud index upload. Authentication, model downloads and automatic SDK usage telemetry remain separate network behavior; complete network silence is not claimed. [Official Moss session documentation](https://docs.moss.dev/docs/reference/python/sessions)
 
 ## Components and boundaries
 
@@ -39,9 +39,9 @@ Readiness, index lifecycle and observed latency are explicit operational signals
 
 ## Deployment actually being prepared
 
-The public GitHub repository is [AngRoy/again](https://github.com/AngRoy/again). A durable cloud deployment is being prepared; the exact deployment and a remotely verified public URL will be recorded in the submission status. The initial real text-retrieval diagnostic ran on Windows and is not evidence of a working Linux deployment.
+The public GitHub repository is [AngRoy/again](https://github.com/AngRoy/again). The live app is [again-fl36.onrender.com](https://again-fl36.onrender.com) on Render Free. The Docker/Linux build passed remote readiness with seven seed documents; complete feature acceptance is recorded separately in the submission status. The initial real text-retrieval diagnostic ran on Windows and is not evidence of a working Linux deployment.
 
-A portable Dockerfile targets `app.main:app` on port 7860. Render is the selected cloud target; deployment and remote native readiness are pending. The initial Windows probe is not a substitute for validating the Linux container. Runtime credentials are private service environment variables, not committed to this repository. [Render Docker deployment](https://render.com/docs/docker), [Render environment variables](https://render.com/docs/configure-environment-variables)
+A portable Dockerfile targets `app.main:app` on port 7860. Render is the deployed cloud target; the Docker build and real native readiness check passed. The initial Windows probe is not a substitute for validating the Linux container. Runtime credentials are private service environment variables, not committed to this repository. [Render Docker deployment](https://render.com/docs/docker), [Render environment variables](https://render.com/docs/configure-environment-variables)
 
 Render Free services spin down after 15 minutes without inbound traffic. Platform restart takes about a minute and the app then needs genuine Moss readiness; neither warm-query timing nor a persistent URL implies instant availability. RAM additions disappear on restart. [Render Free service limits](https://render.com/docs/free)
 

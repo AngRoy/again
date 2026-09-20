@@ -57,7 +57,7 @@ Included: sanitized seeds, free-text recall, recorded attempts, source excerpts,
 
 Excluded: command execution, automatic repair, uploads, accounts, integrations, general chat, training, new inference experiments, tracing, or claims of SSD/inference acceleration.
 
-Public-demo input goes to its server. Self-hosting runs application processing on the user's host; Moss startup can authenticate or download a model. No full-offline claim is made. New records are session-local RAM state with a 60-minute inactivity expiry, five-addition limit and a maximum of 100 visitor sessions. They do not persist across restarts. The app does not log pasted query text.
+Public-demo input goes to its server. Self-hosting runs application processing on the user's host; Moss can authenticate, download a model and send SDK usage telemetry. No full-offline claim is made. New records are session-local RAM state with a 60-minute inactivity expiry, five-addition limit and a maximum of 100 visitor sessions. They do not persist across restarts. The app does not log pasted query text.
 
 The API bounds request bodies, text lengths and queued work. These measures keep a small public demonstration manageable; they are not a claim of production security or comprehensive debugging intelligence.
 

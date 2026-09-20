@@ -15,7 +15,7 @@ text{font-family:Segoe UI,Arial,sans-serif;fill:#203a31} .muted{fill:#506b60} .w
 <path d="M720 297 V365" class="flow"/>
 <text x="751" y="337" class="small muted">HTTPS JSON / public cloud deployment</text>
 <rect x="64" y="373" width="1312" height="794" rx="28" fill="#e8f0e6" stroke="#b5c9b9" stroke-width="2"/>
-<text x="98" y="414" class="label">APPLICATION HOST / FASTAPI / PORT 7860</text>
+<text x="98" y="414" class="label">APPLICATION HOST / RENDER FREE / DOCKER LINUX</text>
 <text x="1340" y="414" text-anchor="end" class="small muted">Deployment readiness checked separately</text>
 <rect x="140" y="447" width="1160" height="126" rx="18" fill="#254c3b"/>
 <text x="172" y="485" class="heading white">FastAPI: validation, session ownership, serialized native work</text>
@@ -45,5 +45,5 @@ text{font-family:Segoe UI,Arial,sans-serif;fill:#203a31} .muted{fill:#506b60} .w
 <text x="720" y="1101" text-anchor="middle" class="small muted">Failed attempts / conditions / actual outcome status / native IDs and scores</text>
 <text x="720" y="1148" text-anchor="middle" class="small muted">Separate observations: cold readiness, retrieval including embedding, API, browser round trip</text>
 <text x="72" y="1210" class="small">Public demo: use sample text. Self-hosting runs the app on your own host.</text>
-<text x="72" y="1242" class="small muted">Moss startup may authenticate or download models. No offline guarantee, generative LLM, or cloud index upload.</text>
+<text x="72" y="1242" class="small muted">Moss auth, model downloads and SDK usage telemetry may use the network. No generative LLM or cloud index upload.</text>
 </svg>

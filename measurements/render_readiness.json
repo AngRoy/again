@@ -1,0 +1,32 @@
+{
+  "public_url": "https://again-fl36.onrender.com",
+  "runtime": "Render Free Docker/Linux",
+  "observations": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "client_ms": 1288.2,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "model": "moss-minilm",
+        "seed_count": 7,
+        "teaching_enabled": true,
+        "cold_ready_ms": 12399.906,
+        "message": "Genuine Moss text retrieval is ready.",
+        "storage": "Ephemeral, visitor-isolated additions; one hour of inactivity or restart.",
+        "version": "1.0.0"
+      }
+    },
+    {
+      "path": "/api/ready",
+      "status": 200,
+      "client_ms": 1344.9,
+      "body": {
+        "ready": true,
+        "model": "moss-minilm"
+      }
+    }
+  ],
+  "scope": "First successful remote readiness observation; feature acceptance and benchmark distribution are separate."
+}

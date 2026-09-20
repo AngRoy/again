@@ -219,7 +219,7 @@
     try {
       const { data } = await request('/api/teach', payload, 60000);
       if (data.indexed !== true) throw new Error(text(data.message) || 'The server did not confirm indexing. This outcome has not been shown as saved.');
-      state.lastTeaching = { ...payload, id: data.id };
+      state.lastTeaching = { ...payload, id: data.id, providedExample: payload.is_synthetic && ['symptom', 'conditions', 'attempted_action', 'outcome'].every(key => payload[key] === text(state.teachingExample?.[key]).trim()) };
       note('teach-message', `${text(data.message) || 'Indexed with Moss and saved for your session.'} ${payload.is_synthetic ? 'Fictional / user reported.' : 'User reported; not independently verified.'}`);
       $('recall-taught').hidden = false; announce('Your outcome was indexed. Try recalling it in different words.'); await refreshHealth();
     } catch (error) { note('teach-message', error.message, true); }
@@ -246,10 +246,12 @@
   $('example-select').addEventListener('change', () => { if ($('example-select').value !== '') { chooseExample(state.examples[Number($('example-select').value)]); markStale(); } });
   $('fill-teaching').addEventListener('click', fillTeaching); $('forget-button').addEventListener('click', forget);
   $('recall-taught').addEventListener('click', () => {
-    $('query').value = ''; $('stage').value = ''; $('conditions').value = ''; $('condition-preset').value = ''; $('context-details').open = true;
+    const suggested = state.lastTeaching?.providedExample ? text(state.teachingExample?.recall_query) : '';
+    $('query').value = suggested; $('stage').value = ''; $('conditions').value = suggested ? text(state.teachingExample?.recall_conditions) : ''; $('condition-preset').value = ''; $('context-details').open = true;
+    $('memory-enabled').checked = true; $('memory-description').textContent = 'Retrieve past outcomes with Moss';
     $('query').placeholder = 'Describe the saved problem in different words...'; updateCount(); markStale(); $('query').focus();
     $('query').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
-    note('example-feedback', 'Ask in your own words. Include the conditions that made the outcome applicable.');
+    note('example-feedback', suggested ? 'A different wording is filled. Select Recall a fix to search your live session memory.' : 'Ask in your own words. Include the conditions that made the outcome applicable.');
   });
   const stale = make('p', 'stale-notice', 'Inputs changed. Recall again to update this result.'); stale.id = 'result-stale'; stale.hidden = true; stale.setAttribute('role', 'status'); $('result-panel').children[0].after(stale);
   stageFallbacks.forEach(([value, label]) => addStage(value, label));

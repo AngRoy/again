@@ -77,16 +77,18 @@ def decide(retrieved_records, context):
     facts = context['facts']
     if 'admin_passed' in facts and ('admin_false' in facts or 'administrator_check_failed' in facts):
         return {**empty, 'state': 'clarify', 'headline': 'These conditions conflict', 'next_step': 'For this attempt, did the administrator check pass or fail? Separate earlier attempts from the current failure before selecting a remedy.'}
-    eligible, partial, platform_mismatches = [], [], []
+    eligible, partial, platform_mismatches, prerequisite_conflicts = [], [], [], []
     for record in retrieved_records:
         if record.get('provenance_class') == 'visitor_reported':
             continue
         rule = record.get('applicability', {})
         stage_matches = (context['stage'] == record['stage']) if context['stage'] else record['stage'] in context['inferred_stages']
         supporting = set(sum(rule.get('required_fact_groups', []), [])) & facts
-        if set(rule.get('contradictions', [])) & facts:
-            continue
         if context['stage'] and not stage_matches:
+            continue
+        if set(rule.get('contradictions', [])) & facts:
+            if stage_matches or supporting:
+                prerequisite_conflicts.append(record)
             continue
         groups_ok = all(set(group) & facts for group in rule.get('required_fact_groups', []))
         platforms = context.get('platforms', set())
@@ -105,6 +107,9 @@ def decide(retrieved_records, context):
     if platform_mismatches:
         recorded_os = platform_mismatches[0]['environment']['os']
         return {**empty, 'state': 'clarify', 'headline': 'Check the affected environment', 'next_step': f'This memory was observed on {recorded_os}. Which operating system runs the failing component in your current attempt? Its recorded repair has not been validated for a different environment.', 'what_matches': ['Related history was retrieved, but the reported platform does not establish the recorded environment.']}
+    if prerequisite_conflicts:
+        record = prerequisite_conflicts[0]
+        return {**empty, 'state': 'clarify', 'headline': 'The recorded prerequisites do not match', 'next_step': record['applicability']['clarification'], 'what_matches': ['Retrieved history has a prerequisite contradicted by the current input.']}
     if partial:
         record = partial[0]
         return {**empty, 'state': 'clarify', 'headline': 'One detail before a next step', 'next_step': record['applicability']['clarification'], 'what_matches': ['Related history was retrieved, but its conditions are not established.'], 'matched_id': record['id']}

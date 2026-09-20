@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 from types import SimpleNamespace
 import pytest
 from fastapi.testclient import TestClient
@@ -69,7 +69,7 @@ def test_private_native_filter_and_ownership_defense(memory):
         memory.private.hits=['other','own']
         hits,records,_,calls=await memory.retrieve(va,'a public-safe test query')
         assert calls==2
-        assert memory.private.queries[0][1].filter=={'visitor_id':va['id']}
+        assert memory.private.queries[0][1].filter=={'$and':[{'field':'visitor_id','condition':{'$eq':va['id']}}]}
         assert 'other' not in [r['id'] for r in hits]
         assert 'other' not in [r['id'] for r in records]
     asyncio.run(run())

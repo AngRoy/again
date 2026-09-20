@@ -1,4 +1,4 @@
-﻿"""Private server-side credential loading and the observed Windows native bootstrap."""
+"""Private server-side credential loading and the observed Windows native bootstrap."""
 import ctypes
 import importlib
 import os
@@ -8,7 +8,9 @@ _HANDLES = []
 
 
 def load_credentials():
-    path = Path(os.environ.get('AGAIN_ENV_FILE', Path(__file__).resolve().parents[1] / '.env'))
+    root = Path(__file__).resolve().parents[1]
+    default = root / '.env.local' if (root / '.env.local').is_file() else root / '.env'
+    path = Path(os.environ.get('AGAIN_ENV_FILE', default))
     if path.is_file():
         for line in path.read_text(encoding='utf-8-sig').splitlines():
             key, sep, value = line.strip().partition('=')

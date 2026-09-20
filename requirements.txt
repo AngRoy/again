@@ -1,5 +1,16 @@
+# Runtime versions observed in the successful Render Linux build, 2026-09-20.
 moss==1.12.0
 inferedge-moss-core==0.24.0
 numpy==2.2.6
 fastapi==0.115.14
 uvicorn==0.34.3
+annotated-types==0.8.0
+anyio==4.15.1
+click==8.5.0
+h11==0.16.0
+idna==3.20
+pydantic==2.13.5
+pydantic-core==2.46.5
+starlette==0.46.2
+typing-extensions==4.16.0
+typing-inspection==0.4.4

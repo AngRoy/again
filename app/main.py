@@ -109,7 +109,7 @@ async def examples():
     order = ['elevated_controller_worker_launch_denied', 'trace_controller_not_elevated', 'moss_torch_import_order', 'numpy_first_query_commit_jump', 'extraction_ram_preflight']
     rows = [{'id': k, 'label': memory.records[k]['title'], 'query': memory.records[k]['demo_queries'][0], 'stage': memory.records[k]['stage'], 'conditions': ''} for k in order]
     rows.append({'id': 'ambiguous', 'label': 'Same error, missing stage', 'query': 'Access is denied. What should I try next?', 'stage': '', 'conditions': ''})
-    return {'examples': rows, 'stages': [{'value': r['stage'], 'label': r['stage'].replace('_', ' ').capitalize()} for r in memory.records.values()], 'teaching_example': {'symptom': 'The browser refuses the connection at localhost:3000.', 'conditions': 'The terminal says the development server is ready at localhost:3001.', 'attempted_action': 'Refreshing the old localhost:3000 tab did not help. I opened the terminal\'s reported localhost:3001 URL.', 'outcome': 'Fictional demonstration: the page loaded at localhost:3001.', 'is_synthetic': True}}
+    return {'examples': rows, 'stages': [{'value': r['stage'], 'label': r['stage'].replace('_', ' ').capitalize()} for r in memory.records.values()], 'teaching_example': {'symptom': 'The browser refuses the connection at localhost:3000.', 'conditions': 'The terminal says the development server is ready at localhost:3001.', 'attempted_action': 'Refreshing the old localhost:3000 tab did not help. I opened the terminal\'s reported localhost:3001 URL.', 'outcome': 'Fictional demonstration: the page loaded at localhost:3001.', 'is_synthetic': True, 'recall_query': 'My server says it is running, but an old browser tab refuses the connection.'}}
 
 
 @app.post('/api/recall')

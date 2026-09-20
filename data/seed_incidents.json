@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "title": "Again — evidence-backed incident memories",
+  "title": "Again \u2014 evidence-backed incident memories",
   "content_policy": "Seven sanitized incidents from the supplied experiment reports. Recommendations are proposed next steps unless the source explicitly verifies the outcome. These records contain no credentials, personal paths, raw traces, or proprietary code. The separate synthetic_teaching_example is fictional and must remain visibly labelled.",
   "ui_rules": [
     "Render status and limits beside the recommendation.",
@@ -162,6 +162,25 @@
               "(?:torch|pytorch).{0,35}(?:already|before|first)",
               "already.{0,25}(?:torch|pytorch)"
             ]
+          },
+          {
+            "fact": "moss_loaded_first",
+            "label": "Moss was initialized before Torch",
+            "any": [
+              "\\bmoss\\s+(?:was\\s+|is\\s+|had\\s+been\\s+)?(?:loaded|initialized|bootstrapped|imported|started|booted)\\s+(?:successfully\\s+)?first\\b",
+              "\\bmoss\\s+(?:loads?|initializes?|boots?|starts?|imports?)\\s+(?:successfully\\s+)?(?:first|before\\s+(?:(?:importing|loading)\\s+)?(?:py)?torch)\\b",
+              "\\bmoss\\s+(?:was\\s+|is\\s+|had\\s+been\\s+)?(?:loaded|initialized|bootstrapped|imported|started|booted)\\s+(?:successfully\\s+)?before\\s+(?:(?:importing|loading)\\s+)?(?:py)?torch\\b",
+              "\\b(?:import|load|bootstrap|initialize|boot)\\s+moss\\s+(?:first|before\\s+(?:py)?torch)\\b",
+              "\\b(?:py)?torch\\s+(?:was\\s+)?(?:loaded|imported|initialized)\\s+after\\s+moss\\b"
+            ]
+          },
+          {
+            "fact": "torch_not_loaded_first",
+            "label": "The input explicitly denies loading Torch first",
+            "any": [
+              "\\b(?:py)?torch\\s+(?:was\\s+|is\\s+|had\\s+)?not\\s+(?:loaded\\s+|imported\\s+|initialized\\s+)?(?:first|before)\\b",
+              "\\b(?:did\\s+not|didn.t|not)\\s+(?:load|import|initialize)\\s+(?:py)?torch\\s+(?:first|before)\\b"
+            ]
           }
         ],
         "required_fact_groups": [
@@ -173,7 +192,8 @@
           ]
         ],
         "contradictions": [
-          "moss_loaded_first"
+          "moss_loaded_first",
+          "torch_not_loaded_first"
         ],
         "clarification": "Did native initialization fail after Torch had already loaded, or did Moss initialize first in a fresh process?"
       },
@@ -248,7 +268,8 @@
               "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:has\\s+)?(?:passed|succeeded|true)",
               "(?:already|am)\\s+(?:an?\\s+)?(?:administrator|admin|elevated)",
               "elevated\\s+(?:trace\\s+)?(?:controller|collector|process|terminal)",
-              "controller_windows_administrator\\s*[:=]\\s*true"
+              "controller_windows_administrator\\s*[:=]\\s*true",
+              "administrator_preflight\\s*(?:(?:says|reports|has|is)\\s*|[:=]\\s*)?(?:true|passed|succeeded)\\b"
             ]
           },
           {
@@ -257,15 +278,16 @@
             "any": [
               "controller_windows_administrator\\s*[:=]\\s*false",
               "(?:controller|token|process).{0,35}(?:not\\s+(?:an?\\s+)?admin(?:istrator)?|not\\s+elevated|non.admin)",
-              "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:says\\s+)?false"
+              "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:says\\s+)?false",
+              "administrator_preflight\\s*(?:(?:says|reports|is)\\s*|[:=]\\s*)?(?:false|failed)\\b"
             ]
           },
           {
             "fact": "administrator_check_failed",
             "label": "Administrator preflight failed",
             "any": [
-              "administrator_preflight.{0,40}(?:fail|denied)",
-              "(?:fail|denied).{0,40}administrator_preflight"
+              "administrator_preflight\\s*(?:(?:says|reports|has)\\s*)?(?:[:=]\\s*)?(?:fail(?:ed)?|false|denied)\\b",
+              "(?:fail(?:ed)?|denied)\\s+(?:at\\s+|during\\s+)?administrator_preflight\\b"
             ]
           }
         ],
@@ -369,7 +391,8 @@
               "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:has\\s+)?(?:passed|succeeded|true)",
               "(?:already|am)\\s+(?:an?\\s+)?(?:administrator|admin|elevated)",
               "elevated\\s+(?:trace\\s+)?(?:controller|collector|process|terminal)",
-              "controller_windows_administrator\\s*[:=]\\s*true"
+              "controller_windows_administrator\\s*[:=]\\s*true",
+              "administrator_preflight\\s*(?:(?:says|reports|has|is)\\s*|[:=]\\s*)?(?:true|passed|succeeded)\\b"
             ]
           },
           {
@@ -378,15 +401,16 @@
             "any": [
               "controller_windows_administrator\\s*[:=]\\s*false",
               "(?:controller|token|process).{0,35}(?:not\\s+(?:an?\\s+)?admin(?:istrator)?|not\\s+elevated|non.admin)",
-              "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:says\\s+)?false"
+              "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:says\\s+)?false",
+              "administrator_preflight\\s*(?:(?:says|reports|is)\\s*|[:=]\\s*)?(?:false|failed)\\b"
             ]
           },
           {
             "fact": "administrator_check_failed",
             "label": "Administrator preflight failed",
             "any": [
-              "administrator_preflight.{0,40}(?:fail|denied)",
-              "(?:fail|denied).{0,40}administrator_preflight"
+              "administrator_preflight\\s*(?:(?:says|reports|has)\\s*)?(?:[:=]\\s*)?(?:fail(?:ed)?|false|denied)\\b",
+              "(?:fail(?:ed)?|denied)\\s+(?:at\\s+|during\\s+)?administrator_preflight\\b"
             ]
           },
           {
@@ -664,7 +688,7 @@
     "id": "synthetic_dev_server_port_mismatch",
     "title": "Fictional teaching example: browser points to yesterday's dev-server port",
     "is_synthetic": true,
-    "required_label": "Fictional example — user-reported outcome, not a measured project incident",
+    "required_label": "Fictional example \u2014 user-reported outcome, not a measured project incident",
     "search_text": "browser connection refused localhost dev server started different port terminal ready URL old bookmark wrong port",
     "environment": {
       "os": "Any",

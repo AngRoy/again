@@ -10,4 +10,4 @@ COPY --chown=appuser:appuser static static
 COPY --chown=appuser:appuser data data
 USER appuser
 EXPOSE 7860
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860", "--no-access-log"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860", "--no-access-log", "--limit-concurrency", "16", "--timeout-keep-alive", "5"]

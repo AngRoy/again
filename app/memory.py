@@ -22,15 +22,19 @@ class BusyError(Exception):
 
 
 async def finish_native(awaitable):
-    # Do not release the serialization lock while an SDK to_thread call still runs.
+    # Keep the complete native + bookkeeping transaction alive under the lock.
+    # Repeated request cancellation must not cancel an SDK to_thread task.
     task = asyncio.create_task(awaitable)
-    try:
-        return await asyncio.shield(task)
-    except asyncio.CancelledError:
+    cancelled = False
+    while not task.done():
         try:
-            await task
-        finally:
-            raise
+            await asyncio.shield(task)
+        except asyncio.CancelledError:
+            cancelled = True
+    result = task.result()
+    if cancelled:
+        raise asyncio.CancelledError
+    return result
 
 
 class MossMemory:
@@ -83,14 +87,20 @@ class MossMemory:
         finally:
             self.lock.release()
 
+    async def _remove_visitor(self, token):
+        visitor = self.visitors.get(token)
+        if visitor is None:
+            return
+        ids = set(visitor['records']) | visitor.get('cleanup_ids', set())
+        if ids:
+            await self.private.delete_docs(list(ids))
+        del self.visitors[token]
+
     async def expire(self):
         now = time.monotonic()
         expired = [key for key, value in self.visitors.items() if now - value['last_seen'] > TTL_SECONDS]
         for key in expired:
-            visitor = self.visitors[key]
-            if visitor['records']:
-                await finish_native(self.private.delete_docs(list(visitor['records'])))
-            del self.visitors[key]
+            await finish_native(self._remove_visitor(key))
 
     def visitor(self, cookie):
         if cookie in self.visitors:
@@ -99,7 +109,7 @@ class MossMemory:
         if len(self.visitors) >= MAX_VISITORS:
             raise BusyError('The demo has reached its session limit. Please try later.')
         token = secrets.token_urlsafe(32)
-        value = {'id': uuid.uuid4().hex, 'last_seen': time.monotonic(), 'records': {}, 'requests': []}
+        value = {'id': uuid.uuid4().hex, 'last_seen': time.monotonic(), 'records': {}, 'cleanup_ids': set(), 'requests': []}
         self.visitors[token] = value
         return token, value
 
@@ -119,7 +129,7 @@ class MossMemory:
         records = dict(self.records)
         if visitor['records']:
             # Native filtering AND ownership post-check: one visitor never sees another's text/IDs.
-            private_hits = await finish_native(self.private.query(text, self.sdk.QueryOptions(top_k=3, alpha=1.0, filter={'visitor_id': visitor['id']})))
+            private_hits = await finish_native(self.private.query(text, self.sdk.QueryOptions(top_k=3, alpha=1.0, filter={'$and': [{'field': 'visitor_id', 'condition': {'$eq': visitor['id']}}]})))
             self.native_calls += 1
             native_queries += 1
             own = [{'id': d.id, 'score': float(d.score), 'scope': 'your_session'} for d in private_hits.docs if d.id in visitor['records']]
@@ -130,19 +140,36 @@ class MossMemory:
         return hits, [records[h['id']] for h in hits], round((time.perf_counter() - start) * 1000, 3), native_queries
 
     async def teach(self, visitor, data):
-        if len(visitor['records']) >= MAX_ADDITIONS:
+        if len(visitor['records']) + len(visitor.get('cleanup_ids', set())) >= MAX_ADDITIONS:
             raise BusyError('This session already has five memories. Clear them to start again.')
         rid = 'memory_' + uuid.uuid4().hex
         label = 'Fictional demonstration' if data['is_synthetic'] else 'Your reported incident'
         record = {'id': rid, 'title': label + ': ' + data['symptom'][:90], 'search_text': data['symptom'] + ' ' + data['conditions'], 'stage': 'user_reported', 'status': 'synthetic_user_reported' if data['is_synthetic'] else 'user_reported', 'is_synthetic': data['is_synthetic'], 'provenance_class': 'visitor_reported', 'conditions': data['conditions'], 'observations': ['Symptom: ' + data['symptom'], 'Conditions: ' + data['conditions'], 'Attempted action: ' + data['attempted_action'], 'User-reported outcome: ' + data['outcome']], 'failed_attempts': [], 'next_step': 'Compare your current conditions with this user-reported outcome before reusing the action.', 'limits': ['User-reported; not independently verified.', 'Visible only in this browser session; expires after one hour of inactivity or a server restart.'], 'sources': [{'id': rid + '_note', 'document': 'Your session note', 'section': label, 'excerpt': '\n'.join([data['symptom'], data['conditions'], data['attempted_action'], data['outcome']]), 'excerpt_type': 'fictional_note' if data['is_synthetic'] else 'user_report'}]}
         started = time.perf_counter()
-        await finish_native(self.private.add_docs([self.sdk.DocumentInfo(id=rid, text=self.document_text(record), metadata={'visitor_id': visitor['id']})]))
-        visitor['records'][rid] = record
-        return rid, round((time.perf_counter() - started) * 1000, 3)
+
+        async def commit():
+            pending = visitor.setdefault('cleanup_ids', set())
+            pending.add(rid)
+            try:
+                added, updated = await self.private.add_docs([self.sdk.DocumentInfo(id=rid, text=self.document_text(record), metadata={'visitor_id': visitor['id']})])
+                if (added, updated) != (1, 0):
+                    raise RuntimeError('native_insert_count_mismatch')
+                visitor['records'][rid] = record
+                pending.discard(rid)
+            except BaseException:
+                # A mutation may have inserted before reporting failure. Retain
+                # ownership if rollback fails, so expiry/forget can still delete
+                # it and it continues to count toward the five-addition bound.
+                try:
+                    await self.private.delete_docs([rid])
+                except Exception:
+                    pass
+                else:
+                    pending.discard(rid)
+                raise
+            return rid, round((time.perf_counter() - started) * 1000, 3)
+
+        return await finish_native(commit())
 
     async def forget(self, token):
-        visitor = self.visitors.get(token)
-        if visitor:
-            if visitor['records']:
-                await finish_native(self.private.delete_docs(list(visitor['records'])))
-            del self.visitors[token]
+        await finish_native(self._remove_visitor(token))

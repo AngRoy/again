@@ -135,3 +135,35 @@ def test_taught_similarity_cannot_create_a_record_absent_from_retrieval():
 def test_uppercase_error_word_is_not_a_specific_identifier():
     record={**TAUGHT_PORT,'search_text':'ERROR in this app.'}
     assert taught_result('ERROR happened.',record)['state']=='no_match'
+
+
+
+@pytest.mark.parametrize('text',[
+    'Moss initialized first, before Torch; native DLL initialization failed.',
+    'Moss was loaded before PyTorch. The native SDK initialization fails.',
+    'Torch was not loaded first; native DLL initialization failed.',
+    'I did not import PyTorch before Moss. Native SDK initialization failed.',
+])
+def test_opposite_or_negated_import_order_does_not_recommend_torch_first_repair(text):
+    result=run(text,['moss_torch_import_order'],stage='native_sdk_bootstrap')
+    assert result['state']=='clarify'
+    assert result['matched_id'] is None
+    assert not result['failed_attempts']
+
+
+@pytest.mark.parametrize('rid',[
+    'elevated_controller_worker_launch_denied','trace_controller_not_elevated',
+    'moss_torch_import_order','numpy_first_query_commit_jump','extraction_ram_preflight',
+])
+def test_real_ui_examples_establish_their_own_recorded_case(rid):
+    record=BYID[rid]
+    result=run(record['demo_queries'][0],list(BYID),stage=record['stage'])
+    assert result['state']=='matched'
+    assert result['matched_id']==rid
+
+
+def test_canonical_preflight_pass_does_not_turn_worker_denial_into_admin_failure():
+    result=run('LaunchUnelevated Access is denied; administrator_preflight says passed.',
+               ['trace_controller_not_elevated','elevated_controller_worker_launch_denied'],stage='unelevated_worker_ready')
+    assert result['state']=='matched'
+    assert result['matched_id']=='elevated_controller_worker_launch_denied'

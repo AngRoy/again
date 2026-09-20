@@ -6,7 +6,7 @@ Again is a small troubleshooting-memory agent. Genuine Moss text retrieval finds
 
 [Repository](https://github.com/AngRoy/again) | [Product requirements](PRD.md) | [Architecture](ARCHITECTURE.md) | [Demo script](DEMO_AND_SUBMISSION.md) | [Submission status](SUBMISSION_READY.md)
 
-**Build status:** the native `moss-minilm` text-retrieval probe has passed on Windows. End-to-end app checks and the public demo URL are pending; see the submission status for the final verified build. No planned feature below should be read as a completed deployment claim until those checks pass.
+**Live demo:** [again-fl36.onrender.com](https://again-fl36.onrender.com). The Linux cloud service has passed genuine Moss startup and remote readiness checks. Full app acceptance is being completed; see [submission status](SUBMISSION_READY.md). Render Free can sleep after 15 idle minutes, so first access may need a platform restart and Moss warmup. [Render Free limits](https://render.com/docs/free)
 
 ## Why Again
 
@@ -16,7 +16,7 @@ Seven sanitized historical incidents ship with the app. A separate fictional por
 
 ## Run locally
 
-Use Python 3.12. From this repository's root:
+Use Python 3.11 or 3.12 (the cloud container uses 3.11). From this repository's root:
 
 ```powershell
 python -m venv .venv
@@ -32,7 +32,7 @@ Edit `.env.local` locally and enter the two Moss values named in the template. D
 
 Open `http://127.0.0.1:7860`. Readiness requires successful genuine Moss startup and a real warm query. The first start may authenticate and download the embedding model. This application does not depend on Torch, Transformers, a generative LLM, or the earlier inference models.
 
-On Linux, use `.venv/bin/python` for the same commands. A Dockerfile is provided as a portable deployment recipe; a successful Linux deployment must be verified separately. A durable cloud deployment is being prepared; only a remotely verified URL will be published as the live demo. The initial Windows diagnostic is separate from Linux deployment validation.
+On Linux, use `.venv/bin/python` for the same commands. The included Dockerfile has built successfully on Render Free, where the real Moss readiness query passed. The initial Windows diagnostic and deployed Linux measurements remain separate observations.
 
 ## Use it
 
@@ -46,7 +46,7 @@ Examples only fill the input. They do not select an answer or inject saved searc
 
 ## Data and privacy
 
-The public demo sends pasted text to its backend. Use sample errors. This is not on-device processing in the browser. Self-hosting keeps application inputs on your own host, subject to Moss startup/authentication and model-download behavior; complete offline or network-silent operation is not claimed.
+The public demo sends pasted text to its backend. Use sample errors. This is not on-device processing in the browser. Self-hosting keeps application inputs on your own host, subject to Moss authentication, model downloads and SDK usage telemetry; complete offline or network-silent operation is not claimed.
 
 Seed memory is shared and read-only. New outcomes use a separate private Moss index with a mandatory server-generated visitor filter and an ownership check after retrieval. An opaque HttpOnly, SameSite=Lax cookie identifies a visitor; there is no public listing of taught outcomes. Additions are held in RAM, expire after 60 minutes of inactivity, and disappear when the server restarts. At most 100 visitor sessions and five additions per visitor are allowed. Forget deletes the current visitor's indexed additions. Expired indexed additions are deleted at the next memory operation.
 
@@ -65,7 +65,8 @@ Recall depends on the incident corpus, semantic retrieval, and the supplied cond
 - `POST /api/recall`: query, optional stage/conditions, and `memory_enabled`.
 - `POST /api/teach`: symptom, conditions, attempted action, outcome, and `is_synthetic`.
 - `POST /api/forget`: remove this visitor's additions.
-- `GET /api/health`: public readiness after a real warm query.
+- `GET /api/health`: public readiness and observed cold-ready time.
+- `GET /api/ready`: HTTP 200 only after a real warm query; otherwise HTTP 503.
 - `GET /api/examples`: sanitized sample input text.
 
 All UI requests use ordinary JSON. The combined Moss retrieval interval includes local embedding and result assembly; one or two actual queries are counted. API time and browser round-trip time are separate. No artificial delay or recorded timing is presented as a live result.

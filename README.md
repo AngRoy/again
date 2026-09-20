@@ -1,0 +1,70 @@
+# Again
+
+**Stop repeating failed fixes.** Paste an error. Recover what you tried. Take the next step.
+
+Again is a small troubleshooting-memory agent. Genuine Moss text retrieval finds relevant incident memories; an explicit policy checks their stage and conditions before showing one recorded next step, a clarifying question, or no applicable memory. Evidence includes failed attempts and the outcome's actual status.
+
+[Repository](https://github.com/AngRoy/again) | [Product requirements](PRD.md) | [Architecture](ARCHITECTURE.md) | [Demo script](DEMO_AND_SUBMISSION.md) | [Submission status](SUBMISSION_READY.md)
+
+**Build status:** the native `moss-minilm` text-retrieval probe has passed on Windows. End-to-end app checks and the public demo URL are pending; see the submission status for the final verified build. No planned feature below should be read as a completed deployment claim until those checks pass.
+
+## Why Again
+
+The same words can describe different failures. If administrator preflight failed, checking the actual token is relevant. If that check already passed and the normal-permission helper cannot launch, another elevation retry repeats the wrong intervention. Again retrieves the relevant history, keeps partial repairs separate from full resolution, and links its next step to readable evidence.
+
+Seven sanitized historical incidents ship with the app. A separate fictional port-mismatch card demonstrates teaching; it is never presented as an independently verified historical incident. Full private reports and research artifacts are not served or included in this repository.
+
+## Run locally
+
+Use Python 3.12. From this repository's root:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+Copy-Item .env.example .env.local
+```
+
+Edit `.env.local` locally and enter the two Moss values named in the template. Do not put their values in commands, screenshots, browser input, or commits. Existing nonempty environment values take precedence. Start the app:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 7860
+```
+
+Open `http://127.0.0.1:7860`. Readiness requires successful genuine Moss startup and a real warm query. The first start may authenticate and download the embedding model. This application does not depend on Torch, Transformers, a generative LLM, or the earlier inference models.
+
+On Linux, use `.venv/bin/python` for the same commands. A Dockerfile is provided as a portable deployment recipe; a successful Linux deployment must be verified separately. A durable cloud deployment is being prepared; only a remotely verified URL will be published as the live demo. The initial Windows diagnostic is separate from Linux deployment validation.
+
+## Use it
+
+1. Choose **Try a real incident**, or paste a short error without secrets.
+2. Give the failure stage and current conditions when known. Click **Recall a fix**.
+3. Read the next step, previous failed attempts, status and source excerpts. Expand the live timing panel for retrieved IDs and query/API/browser timing.
+4. Use **Teach an outcome** to store a session-local, explicitly user-reported result. Then describe it differently and recall it again.
+5. Use **Forget my session** to remove that session's additions. Turning memory off performs no retrieval and says that history is unavailable.
+
+Examples only fill the input. They do not select an answer or inject saved search results. The decision policy consumes incident IDs actually returned by Moss.
+
+## Data and privacy
+
+The public demo sends pasted text to its backend. Use sample errors. This is not on-device processing in the browser. Self-hosting keeps application inputs on your own host, subject to Moss startup/authentication and model-download behavior; complete offline or network-silent operation is not claimed.
+
+Seed memory is shared and read-only. New outcomes use a separate private Moss index with a mandatory server-generated visitor filter and an ownership check after retrieval. An opaque HttpOnly, SameSite=Lax cookie identifies a visitor; there is no public listing of taught outcomes. Additions are held in RAM, expire after 60 minutes of inactivity, and disappear when the server restarts. At most 100 visitor sessions and five additions per visitor are allowed. Forget deletes the current visitor's indexed additions. Expired indexed additions are deleted at the next memory operation.
+
+Queries are not logged by application code. Hosting/network infrastructure may have its own operational logs. Credentials stay in server-side environment configuration. Inputs and excerpts are rendered as text; there is no shell, upload, filesystem-browser, or arbitrary-command endpoint.
+
+Input bounds are 4,000 characters for a query, 1,200 for conditions, and a 16 KiB request body. Native operations are serialized with a bounded eight-second queue wait. These are demo limits, not a production abuse-prevention or multi-tenant security certification.
+
+## What the evidence establishes
+
+This application has its own checks and measurements; prior research test totals and throughput results are not app claims. The initial two-document Windows text-retrieval diagnostic observed a 10.69 ms query and 9.194 s session opening. Those are single diagnostic observations, include the relevant SDK work, and are not deployed median/p95 performance. Final remote checks belong in the submission status.
+
+Recall depends on the incident corpus, semantic retrieval, and the supplied conditions. A reported remedy can still be inapplicable. Diagnosed, partially resolved, unresolved and user-reported outcomes retain those labels. Again proposes a next step; it does not execute a fix or diagnose arbitrary errors.
+
+## API
+
+- `POST /api/recall`: query, optional stage/conditions, and `memory_enabled`.
+- `POST /api/teach`: symptom, conditions, attempted action, outcome, and `is_synthetic`.
+- `POST /api/forget`: remove this visitor's additions.
+- Health/examples routes expose public readiness and sanitized sample inputs; exact routes are verified with the shipped API.
+
+All UI requests use ordinary JSON. Moss query timing includes local embedding when performed inside the SDK call. API time and browser round-trip time are separate. No artificial delay or recorded timing is presented as a live result.

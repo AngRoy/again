@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1280" viewBox="0 0 1440 1280" role="img" aria-labelledby="title description">
+<title id="title">Again architecture: real retrieval, checked applicability, visible evidence</title>
+<desc id="description">A browser sends JSON to a FastAPI cloud host. Genuine Moss queries an immutable seven-incident seed index and an isolated visitor index. A policy checks only retrieved records. It returns one next step or clarification with evidence and actual status. Secrets remain server-side; teaching expires.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#769387"/></marker><style>
+text{font-family:Segoe UI,Arial,sans-serif;fill:#203a31} .muted{fill:#506b60} .white{fill:#f2f8f3} .label{font-size:16px;font-weight:700;letter-spacing:2px} .heading{font-size:25px;font-weight:700} .body{font-size:19px} .small{font-size:17px} .flow{fill:none;stroke:#769387;stroke-width:3;marker-end:url(#arrow)} .card{fill:#fff;stroke:#c9d9cf;stroke-width:2}
+</style></defs>
+<rect width="1440" height="1280" fill="#f4f7f0"/>
+<rect x="64" y="48" width="7" height="74" rx="3" fill="#47775c"/>
+<text x="92" y="76" class="label">AGAIN / SYSTEM ARCHITECTURE</text>
+<text x="92" y="118" font-size="36" font-weight="700">Remember the attempt. Check the conditions.</text>
+<rect x="360" y="162" width="720" height="134" rx="20" class="card"/>
+<text x="392" y="199" class="heading">Browser</text>
+<text x="392" y="231" class="body">Error + current stage + conditions / teach / forget</text>
+<text x="392" y="264" class="small muted">Memory off: no retrieval. Input leaves the browser.</text>
+<path d="M720 297 V365" class="flow"/>
+<text x="751" y="337" class="small muted">HTTPS JSON / public cloud deployment</text>
+<rect x="64" y="373" width="1312" height="794" rx="28" fill="#e8f0e6" stroke="#b5c9b9" stroke-width="2"/>
+<text x="98" y="414" class="label">APPLICATION HOST / FASTAPI / PORT 7860</text>
+<text x="1340" y="414" text-anchor="end" class="small muted">Deployment readiness checked separately</text>
+<rect x="140" y="447" width="1160" height="126" rx="18" fill="#254c3b"/>
+<text x="172" y="485" class="heading white">FastAPI: validation, session ownership, serialized native work</text>
+<text x="172" y="519" class="body white">Opaque HttpOnly cookie / bounded input and queue / server-side credentials</text>
+<text x="172" y="551" class="small white">Ready only after genuine indexing and a successful warm query. No command execution.</text>
+<path d="M720 574 V605 H414 V628" class="flow"/>
+<path d="M720 605 H1027 V628" class="flow"/>
+<rect x="140" y="639" width="546" height="158" rx="18" class="card"/>
+<text x="172" y="675" class="heading">Seed working set</text>
+<text x="172" y="710" class="body">7 immutable sanitized real incidents</text>
+<text x="172" y="742" class="small muted">Genuine Moss / moss-minilm / text query</text>
+<text x="172" y="774" class="small muted">Readable excerpts; no full private reports</text>
+<rect x="754" y="639" width="546" height="158" rx="18" class="card"/>
+<text x="786" y="675" class="heading">Visitor working set</text>
+<text x="786" y="710" class="body">User-reported outcomes / ephemeral RAM</text>
+<text x="786" y="742" class="small muted">Moss visitor_id filter + ownership post-check</text>
+<text x="786" y="774" class="small muted">5 additions per visitor / 1-hour inactivity expiry</text>
+<path d="M414 798 V825 H720 V850" class="flow"/>
+<path d="M1027 798 V825 H720" fill="none" stroke="#769387" stroke-width="3"/>
+<rect x="240" y="859" width="960" height="140" rx="18" fill="#fff8e4" stroke="#decb92" stroke-width="2"/>
+<text x="272" y="896" class="heading">Applicability policy over returned IDs</text>
+<text x="272" y="930" class="body">Stage + required facts + contradictions; ask when evidence is incomplete</text>
+<text x="272" y="963" class="small muted">Recorded status stays intact. Visitor outcomes are not independently verified.</text>
+<path d="M720 1000 V1032" class="flow"/>
+<rect x="240" y="1041" width="960" height="77" rx="18" class="card"/>
+<text x="720" y="1073" text-anchor="middle" class="heading">One next step or clarification, with evidence</text>
+<text x="720" y="1101" text-anchor="middle" class="small muted">Failed attempts / conditions / actual outcome status / native IDs and scores</text>
+<text x="720" y="1148" text-anchor="middle" class="small muted">Separate observations: cold readiness, retrieval including embedding, API, browser round trip</text>
+<text x="72" y="1210" class="small">Public demo: use sample text. Self-hosting runs the app on your own host.</text>
+<text x="72" y="1242" class="small muted">Moss startup may authenticate or download models. No offline guarantee, generative LLM, or cloud index upload.</text>
+</svg>

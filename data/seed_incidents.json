@@ -1,0 +1,754 @@
+{
+  "schema_version": 1,
+  "title": "Again — evidence-backed incident memories",
+  "content_policy": "Seven sanitized incidents from the supplied experiment reports. Recommendations are proposed next steps unless the source explicitly verifies the outcome. These records contain no credentials, personal paths, raw traces, or proprietary code. The separate synthetic_teaching_example is fictional and must remain visibly labelled.",
+  "ui_rules": [
+    "Render status and limits beside the recommendation.",
+    "Use the current failure stage and environment to check applicability after semantic retrieval.",
+    "Do not silently treat an unknown current stage as a matching stage; ask one clarifying question.",
+    "A failed action in one stage is not forbidden in every stage. Administrator verification applies to administrator_preflight; it does not repair an already-elevated worker-launch failure.",
+    "Show counts computed from the retrieved record. Do not describe the two elevated worker-launch failures as two explicit RunAs attempts.",
+    "Do not execute suggested commands. Never request credential values in the public interface.",
+    "Display source excerpts without pretending the complete original reports are deployed.",
+    "A synthetic example or user-reported success is not independently verified engineering evidence."
+  ],
+  "incidents": [
+    {
+      "id": "moss_missing_credentials",
+      "title": "Moss is installed, but authenticated queries are blocked",
+      "search_text": "Moss session cannot open missing credentials project ID project key authentication installed SDK no query .env.local runtime bootstrap",
+      "environment": {
+        "os": "Windows",
+        "component": "Moss Python SDK",
+        "required_facts": [
+          "Failure occurs before an authenticated session or query"
+        ]
+      },
+      "stage": "moss_authentication",
+      "status": "resolved_in_recorded_environment",
+      "observations": [
+        "Cycle one found the SDK installed but both required credential variables absent. No genuine query ran.",
+        "Cycle two loaded the two variables through the private runtime environment; authentication and eight native validation checks passed.",
+        "Only credential presence and authentication status were published."
+      ],
+      "failed_attempts": [],
+      "next_step": "Check presence of MOSS_PROJECT_ID and MOSS_PROJECT_KEY in the application's runtime environment without printing their values. Configure them privately if absent, then perform a real session-open and known-vector query check.",
+      "limits": [
+        "This remedy addresses missing credentials, not every authentication or connectivity error.",
+        "Never paste keys into this demo or commit them to a repository."
+      ],
+      "sources": [
+        {
+          "id": "c1_credentials",
+          "document": "MANAGER_REPORT.md",
+          "section": "Genuine Moss: implemented boundary, blocked query",
+          "excerpt": "Both credential variables were absent. Session opening, native ranking/filter validation, query latency, native index memory, and offline/network measurements remain blocked or null in moss_status.json.",
+          "excerpt_type": "sanitized_quote"
+        },
+        {
+          "id": "c2_credentials",
+          "document": "MANAGER_REPORT_CYCLE2.md",
+          "section": "Credentials and genuine native validation",
+          "excerpt": "Both required values were present and authenticated; no values, hashes or lengths were displayed.",
+          "excerpt_type": "quote"
+        },
+        {
+          "id": "c2_gate",
+          "document": "MANAGER_REPORT_CYCLE2.md",
+          "section": "Credentials and genuine native validation",
+          "excerpt": "The genuine native gate passed eight checks: non-tied vector order, matching/missing metadata filters, IDs and continuation truncation, adapter/native invalid dimensions, and custom embeddings without the Python encoder warmup or changes in monitored model paths.",
+          "excerpt_type": "quote"
+        }
+      ],
+      "demo_queries": [
+        "The Moss package imports but I cannot authenticate my first session.",
+        "The SDK is installed. Why are genuine queries still blocked?"
+      ],
+      "applicability": {
+        "stage_aliases": [
+          "moss_authentication",
+          "(?:authenticat\\w*|credential\\w*|session\\s+(?:open|cannot|can.t))"
+        ],
+        "signals": [
+          {
+            "fact": "authentication_blocked",
+            "label": "An authenticated session or query is blocked",
+            "any": [
+              "authenticat\\w*",
+              "credential\\w*",
+              "(?:session|genuine\\s+quer\\w*).{0,35}(?:blocked|cannot|can.t|fail|not\\s+open)",
+              "(?:cannot|can.t|unable).{0,30}(?:session|quer\\w*)"
+            ]
+          }
+        ],
+        "required_fact_groups": [
+          [
+            "authentication_blocked"
+          ]
+        ],
+        "contradictions": [],
+        "clarification": "Is the failure opening/authenticating the Moss session, and are both required credential variables present? Check presence only; do not paste their values."
+      },
+      "provenance_class": "sanitized_historical_incident",
+      "public_source_note": "Selected public-safe excerpts only; the original private report is not served by this app."
+    },
+    {
+      "id": "moss_torch_import_order",
+      "title": "Native Moss initialization fails after Torch loads",
+      "search_text": "Windows native DLL initialization Moss Torch PyTorch import order error 1114 fresh process bootstrap SDK before Torch smoke failed before decoding",
+      "environment": {
+        "os": "Windows",
+        "component": "Moss native SDK and Torch",
+        "required_facts": [
+          "Failure is native DLL initialization",
+          "Torch was loaded before genuine Moss bootstrap"
+        ]
+      },
+      "stage": "native_sdk_bootstrap",
+      "status": "resolved_in_recorded_environment",
+      "observations": [
+        "Two initial Moss smoke rows failed before decoding after Torch had loaded.",
+        "A two-order diagnostic reproduced Torch-first failure and Moss-first success.",
+        "Bootstrapping genuine Moss before importing Torch repaired the recorded smoke run."
+      ],
+      "failed_attempts": [
+        {
+          "action": "Initialize the native Moss SDK after Torch is already loaded",
+          "outcome": "Native DLL initialization failed before decoding in the recorded smoke worker",
+          "source_ids": [
+            "c2_import_order"
+          ]
+        }
+      ],
+      "next_step": "Reproduce in a fresh process with genuine Moss bootstrap before Torch import, then run a small real-query smoke check. Keep the existing narrow bootstrap repair and record the actual import order.",
+      "limits": [
+        "The exact DLL-level cause was not isolated.",
+        "The recorded import-order repair is specific evidence from this Windows environment, not a universal fix for error 1114."
+      ],
+      "sources": [
+        {
+          "id": "c2_import_order",
+          "document": "MANAGER_REPORT_CYCLE2.md",
+          "section": "Failure history",
+          "excerpt": "The two-order diagnostic then reproduced Torch-first failure and Moss-first success. Importing the genuine SDK before Torch repaired the smoke; bootstrap cost is reported separately. The raw failure, repair diagnostic and successful rerun are all included. Exact DLL causality remains unisolated.",
+          "excerpt_type": "quote"
+        }
+      ],
+      "demo_queries": [
+        "My native retrieval engine crashes only after I import PyTorch.",
+        "Moss DLL initialization fails before decoding on Windows. Torch is already imported."
+      ],
+      "applicability": {
+        "stage_aliases": [
+          "native_sdk_bootstrap",
+          "(?:native|dll).{0,35}(?:init|bootstrap|crash|load)",
+          "(?:init|bootstrap).{0,35}(?:native|dll)"
+        ],
+        "signals": [
+          {
+            "fact": "native_init_failure",
+            "label": "Native initialization fails",
+            "any": [
+              "(?:native|dll).{0,40}(?:fail|crash|error|1114)",
+              "(?:error|fail|crash).{0,40}(?:native|dll)",
+              "\\b1114\\b"
+            ]
+          },
+          {
+            "fact": "torch_loaded_first",
+            "label": "Torch was loaded before the native SDK",
+            "any": [
+              "(?:after|only\\s+after).{0,35}(?:torch|pytorch)",
+              "(?:torch|pytorch).{0,35}(?:already|before|first)",
+              "already.{0,25}(?:torch|pytorch)"
+            ]
+          }
+        ],
+        "required_fact_groups": [
+          [
+            "native_init_failure"
+          ],
+          [
+            "torch_loaded_first"
+          ]
+        ],
+        "contradictions": [
+          "moss_loaded_first"
+        ],
+        "clarification": "Did native initialization fail after Torch had already loaded, or did Moss initialize first in a fresh process?"
+      },
+      "provenance_class": "sanitized_historical_incident",
+      "public_source_note": "Selected public-safe excerpts only; the original private report is not served by this app."
+    },
+    {
+      "id": "trace_controller_not_elevated",
+      "title": "A System32 prompt does not prove administrator privileges",
+      "search_text": "Windows WPR access denied 0x80070005 administrator preflight controller_windows_administrator false PowerShell system32 token elevation recording never started",
+      "environment": {
+        "os": "Windows",
+        "component": "WPR trace controller",
+        "required_facts": [
+          "Controller token is not Administrator",
+          "Failure is at administrator preflight or a non-admin WPR start"
+        ]
+      },
+      "stage": "administrator_preflight",
+      "status": "diagnosed",
+      "observations": [
+        "The historical trace controller recorded controller_windows_administrator=false.",
+        "WPR returned Access is denied with 0x80070005; no capture started.",
+        "Being in a system directory did not establish elevation.",
+        "Later captures passed Administrator preflight and encountered a different worker-launch failure."
+      ],
+      "failed_attempts": [
+        {
+          "action": "Start WPR with a non-administrator controller token",
+          "outcome": "Access denied; no capture started",
+          "source_ids": [
+            "c3_controller_token"
+          ]
+        }
+      ],
+      "next_step": "Verify the controller's actual Windows administrator token. If it is false, use the prepared separate controller's explicit elevation step. Keep the coding agent and experiment worker unelevated. Re-check the reported stage after elevation.",
+      "limits": [
+        "Do not apply this recommendation when administrator preflight has already passed.",
+        "Elevation alone did not complete the later tracing workflow."
+      ],
+      "sources": [
+        {
+          "id": "c3_controller_token",
+          "document": "MANAGER_REPORT_CYCLE3.md",
+          "section": "Disk diagnostic",
+          "excerpt": "Its own metadata/status record controller_windows_administrator: false; the profile validated but no capture started. All seven original files still match recorded hashes. Shell location does not establish elevation.",
+          "excerpt_type": "sanitized_quote"
+        },
+        {
+          "id": "c4_elevation_passed",
+          "document": "MANAGER_REPORT_CYCLE4.md",
+          "section": "Revised disk launch and bounded live outcome",
+          "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start.",
+          "excerpt_type": "quote"
+        }
+      ],
+      "demo_queries": [
+        "My PowerShell prompt is in System32, but administrator_preflight says false.",
+        "WPR returned 0x80070005 and the controller token is not elevated."
+      ],
+      "applicability": {
+        "stage_aliases": [
+          "administrator_preflight",
+          "(?:controller|token).{0,35}(?:not\\s+elevated|non.admin)",
+          "wpr\\s+(?:start|returned)"
+        ],
+        "signals": [
+          {
+            "fact": "admin_passed",
+            "label": "Administrator check already passed",
+            "any": [
+              "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:has\\s+)?(?:passed|succeeded|true)",
+              "(?:already|am)\\s+(?:an?\\s+)?(?:administrator|admin|elevated)",
+              "elevated\\s+(?:trace\\s+)?(?:controller|collector|process|terminal)",
+              "controller_windows_administrator\\s*[:=]\\s*true"
+            ]
+          },
+          {
+            "fact": "admin_false",
+            "label": "Controller is not elevated",
+            "any": [
+              "controller_windows_administrator\\s*[:=]\\s*false",
+              "(?:controller|token|process).{0,35}(?:not\\s+(?:an?\\s+)?admin(?:istrator)?|not\\s+elevated|non.admin)",
+              "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:says\\s+)?false"
+            ]
+          },
+          {
+            "fact": "administrator_check_failed",
+            "label": "Administrator preflight failed",
+            "any": [
+              "administrator_preflight.{0,40}(?:fail|denied)",
+              "(?:fail|denied).{0,40}administrator_preflight"
+            ]
+          }
+        ],
+        "required_fact_groups": [
+          [
+            "admin_false",
+            "administrator_check_failed"
+          ]
+        ],
+        "contradictions": [
+          "admin_passed"
+        ],
+        "clarification": "Which stage failed, and does the controller report its actual administrator token as true or false? A System32 prompt alone does not answer that."
+      },
+      "provenance_class": "sanitized_historical_incident",
+      "public_source_note": "Selected public-safe excerpts only; the original private report is not served by this app."
+    },
+    {
+      "id": "elevated_controller_worker_launch_denied",
+      "title": "Skip another elevation retry: the ordinary worker cannot launch",
+      "search_text": "LaunchUnelevated Access is denied unelevated_worker_ready already administrator elevated controller worker launch token borrowing RunAs popup same failure WPR not started",
+      "environment": {
+        "os": "Windows",
+        "component": "Elevated trace controller launching an ordinary worker",
+        "required_facts": [
+          "Administrator preflight passed",
+          "Failure stage is unelevated_worker_ready",
+          "LaunchUnelevated reports Access is denied"
+        ]
+      },
+      "stage": "unelevated_worker_ready",
+      "status": "partially_resolved",
+      "observations": [
+        "Two recorded elevated capture attempts passed Administrator preflight and failed inside LaunchUnelevated before WPR started.",
+        "The generic Access denied message did not identify the exact native API that failed.",
+        "The replacement ordinary coordinator launched and owned its ordinary worker directly; the elevated controller owned tracing only.",
+        "The replacement worker became ready and remained non-admin. Full live capture still did not complete."
+      ],
+      "failed_attempts": [
+        {
+          "action": "Run the old capture wrapper with an administrator controller",
+          "outcome": "Administrator preflight passed; worker launch failed with Access denied",
+          "source_ids": [
+            "c4_old_launch_failures"
+          ]
+        },
+        {
+          "action": "Retry the old wrapper through the explicit RunAs popup",
+          "outcome": "The same worker-launch stage failed after administrator preflight passed",
+          "source_ids": [
+            "c4_old_launch_failures",
+            "user_elevated_retry"
+          ]
+        }
+      ],
+      "next_step": "Use an ordinary coordinator to start the ordinary worker directly, with a separate elevated controller for WPR. For the existing repaired workflow, inspect controller startup confirmation next; do not repeat elevation as a repair for the old LaunchUnelevated failure.",
+      "limits": [
+        "Worker startup was verified; successful physical disk attribution was not.",
+        "The exact native call responsible for the old Access denied error remains unidentified.",
+        "Only one of the two reported attempts explicitly used RunAs; do not label both as RunAs attempts."
+      ],
+      "sources": [
+        {
+          "id": "c4_old_launch_failures",
+          "document": "MANAGER_REPORT_CYCLE4.md",
+          "section": "Revised disk launch and bounded live outcome",
+          "excerpt": "Both passed Administrator preflight and failed at unelevated_worker_ready inside LaunchUnelevated, before WPR start. Generic Access denied does not identify the native API that failed; outer PowerShell HRESULT 0x80131501 is not that native error.",
+          "excerpt_type": "quote"
+        },
+        {
+          "id": "user_elevated_retry",
+          "document": "User-supplied capture console transcript",
+          "section": "Explicit RunAs popup result",
+          "excerpt": "After an explicit RunAs popup, the reported stage remained unelevated_worker_ready and LaunchUnelevated again reported Access is denied.",
+          "excerpt_type": "sanitized_summary"
+        },
+        {
+          "id": "c4_worker_ready",
+          "document": "MANAGER_REPORT_CYCLE4.md",
+          "section": "Revised disk launch and bounded live outcome",
+          "excerpt": "The ordinary worker became ready and remained non-admin.",
+          "excerpt_type": "quote"
+        }
+      ],
+      "demo_queries": [
+        "LaunchUnelevated says Access is denied. Administrator preflight passed and using the RunAs popup did not help.",
+        "My elevated trace collector cannot spawn its normal-permission helper. What have we already tried?"
+      ],
+      "applicability": {
+        "stage_aliases": [
+          "unelevated_worker_ready",
+          "LaunchUnelevated",
+          "(?:cannot|can.t|unable\\s+to)\\s+(?:spawn|launch|start).{0,45}(?:worker|helper)",
+          "worker.{0,25}launch.{0,25}(?:fail|denied)"
+        ],
+        "signals": [
+          {
+            "fact": "admin_passed",
+            "label": "Administrator check already passed",
+            "any": [
+              "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:has\\s+)?(?:passed|succeeded|true)",
+              "(?:already|am)\\s+(?:an?\\s+)?(?:administrator|admin|elevated)",
+              "elevated\\s+(?:trace\\s+)?(?:controller|collector|process|terminal)",
+              "controller_windows_administrator\\s*[:=]\\s*true"
+            ]
+          },
+          {
+            "fact": "admin_false",
+            "label": "Controller is not elevated",
+            "any": [
+              "controller_windows_administrator\\s*[:=]\\s*false",
+              "(?:controller|token|process).{0,35}(?:not\\s+(?:an?\\s+)?admin(?:istrator)?|not\\s+elevated|non.admin)",
+              "admin(?:istrator)?(?:\\s+preflight|\\s+check)?\\s+(?:says\\s+)?false"
+            ]
+          },
+          {
+            "fact": "administrator_check_failed",
+            "label": "Administrator preflight failed",
+            "any": [
+              "administrator_preflight.{0,40}(?:fail|denied)",
+              "(?:fail|denied).{0,40}administrator_preflight"
+            ]
+          },
+          {
+            "fact": "worker_launch_failed",
+            "label": "The ordinary worker/helper could not launch",
+            "any": [
+              "LaunchUnelevated.{0,55}(?:denied|fail|error)",
+              "(?:denied|fail|error).{0,55}LaunchUnelevated",
+              "unelevated_worker_ready",
+              "(?:cannot|can.t|unable\\s+to)\\s+(?:spawn|launch|start).{0,45}(?:worker|helper)",
+              "worker.{0,25}launch.{0,25}(?:fail|denied)"
+            ]
+          }
+        ],
+        "required_fact_groups": [
+          [
+            "admin_passed"
+          ],
+          [
+            "worker_launch_failed"
+          ]
+        ],
+        "contradictions": [
+          "admin_false"
+        ],
+        "clarification": "Had administrator preflight already passed when the ordinary worker/helper failed to launch?"
+      },
+      "provenance_class": "sanitized_historical_incident",
+      "public_source_note": "Selected public-safe excerpts only; the original private report is not served by this app."
+    },
+    {
+      "id": "controller_startup_confirmation_missing",
+      "title": "The worker is ready, but the trace controller never confirms startup",
+      "search_text": "worker ready non admin controller startup timeout UAC window 120 seconds no status no go signal zero reads trace recording never began cleanup cancellation",
+      "environment": {
+        "os": "Windows",
+        "component": "Split ordinary worker and elevated WPR controller",
+        "required_facts": [
+          "Ordinary worker is ready",
+          "No controller startup or go confirmation arrived"
+        ]
+      },
+      "stage": "controller_startup_wait",
+      "status": "unresolved",
+      "observations": [
+        "The ordinary worker became ready and remained non-admin.",
+        "No controller launch/status, go signal, WPR-start output, or ETL arrived within the 120-second startup window.",
+        "The coordinator cancelled the waiting worker and verified owned-worker cleanup.",
+        "Zero calibration reads completed; the recording clock never began."
+      ],
+      "failed_attempts": [
+        {
+          "action": "Perform the one reserved live split-controller capture attempt",
+          "outcome": "Timed out awaiting controller startup confirmation; cancelled without calibration reads",
+          "source_ids": [
+            "c4_controller_wait"
+          ]
+        }
+      ],
+      "next_step": "Inspect whether the prepared controller actually launched and wrote its startup status. Keep this separate from worker readiness and the later recording timeout. Record explicit controller launch or UAC evidence before drawing a privilege conclusion.",
+      "limits": [
+        "This result does not prove UAC was refused, that a prompt was visible, or that Windows denied privileges.",
+        "No successful full capture or device-byte measurement is established.",
+        "This submission does not require another trace attempt."
+      ],
+      "sources": [
+        {
+          "id": "c4_controller_wait",
+          "document": "MANAGER_REPORT_CYCLE4.md",
+          "section": "Revised disk launch and bounded live outcome",
+          "excerpt": "No controller launch/status, go signal, WPR-start output or ETL arrived within the separate 120-second startup/UAC window. The coordinator then sent a matching cancellation and verified owned-worker cleanup. Completed calibration reads were zero.",
+          "excerpt_type": "sanitized_quote"
+        }
+      ],
+      "demo_queries": [
+        "The helper says ready but my capture times out before any read starts.",
+        "Does a controller-start timeout prove that I refused the UAC prompt?"
+      ],
+      "applicability": {
+        "stage_aliases": [
+          "controller_startup_wait",
+          "controller.{0,35}(?:startup|start).{0,35}(?:timeout|timed\\s+out|missing)",
+          "(?:worker|helper).{0,25}ready.{0,60}(?:timeout|times?\\s+out|no\\s+go|no\\s+status)"
+        ],
+        "signals": [
+          {
+            "fact": "worker_ready",
+            "label": "The ordinary worker reports ready",
+            "any": [
+              "(?:worker|helper).{0,30}(?:ready|started\\s+successfully)"
+            ]
+          },
+          {
+            "fact": "controller_confirmation_missing",
+            "label": "No controller startup/go confirmation arrived",
+            "any": [
+              "no\\s+(?:controller\\s+)?(?:startup|status|go|confirmation)",
+              "controller.{0,35}(?:timeout|timed\\s+out|missing|never)",
+              "(?:capture|recording).{0,25}(?:times?\\s+out|timeout).{0,35}(?:before|read)",
+              "controller_startup_wait"
+            ]
+          }
+        ],
+        "required_fact_groups": [
+          [
+            "worker_ready"
+          ],
+          [
+            "controller_confirmation_missing"
+          ]
+        ],
+        "contradictions": [],
+        "clarification": "Did the ordinary worker report ready, and did the separate controller produce any startup status or go signal before the timeout?"
+      },
+      "provenance_class": "sanitized_historical_incident",
+      "public_source_note": "Selected public-safe excerpts only; the original private report is not served by this app."
+    },
+    {
+      "id": "numpy_first_query_commit_jump",
+      "title": "A tiny matrix operation changes commit much more than working set",
+      "search_text": "NumPy first query matrix vector multiply memory 32 MiB private commit working set tiny 25 by 576 BLAS cold reservation not index size not leak",
+      "environment": {
+        "os": "Windows",
+        "component": "NumPy dense retrieval diagnostic",
+        "required_facts": [
+          "Counter is private/commit or working set",
+          "The jump occurs on the cold first matrix-vector operation"
+        ]
+      },
+      "stage": "first_dense_query",
+      "status": "diagnosed",
+      "observations": [
+        "The isolated 25 by 576 matrix-vector multiply added about 32.09 MiB private/commit, but only about 0.047 MiB working set.",
+        "Normalization, eligible-row gathering, and sorting did not produce the large jump.",
+        "Sixty-four repeated multiplies added only about 0.027 MiB private memory.",
+        "The responsible operation was measured; the allocator's internal mechanism was not proven."
+      ],
+      "failed_attempts": [],
+      "next_step": "Separate private/commit, working set, and explicit array bytes. Compare construction, first query, and repeated-query phases in the actual import order before changing cache reservations or labelling the jump an index-size cost.",
+      "limits": [
+        "This is a diagnosis, not a demonstrated memory reduction.",
+        "The observations do not establish a memory leak or the exact allocator mechanism.",
+        "Do not subtract the measured commitment merely because the working-set change is small."
+      ],
+      "sources": [
+        {
+          "id": "c4_dense_memory",
+          "document": "MANAGER_REPORT_CYCLE4.md",
+          "section": "Memory phases and the earlier allocation result",
+          "excerpt": "A single additional diagnostic isolates dense's cold first-query increment to the 25 x 576 matrix-vector multiply: +32.09375 MiB private/commit, but +0.046875 MiB working set. Normalization, eligible-row gathering and sorting do not create the large jump; 64 repeated multiplies add only 0.02734 MiB private.",
+          "excerpt_type": "sanitized_quote"
+        }
+      ],
+      "demo_queries": [
+        "Why did my tiny NumPy query suddenly reserve 32 MB? Is the retrieval index leaking?",
+        "Commit jumped but resident memory barely moved after the first dense lookup."
+      ],
+      "applicability": {
+        "stage_aliases": [
+          "first_dense_query",
+          "(?:numpy|dense|matrix|blas).{0,40}(?:first|cold|query|lookup|memory|commit)",
+          "(?:first|cold).{0,40}(?:numpy|dense|matrix|blas)"
+        ],
+        "signals": [
+          {
+            "fact": "first_dense_query",
+            "label": "The increase occurs at the cold first query/multiply",
+            "any": [
+              "(?:first|cold).{0,45}(?:query|lookup|multiply|matrix|dense)",
+              "(?:query|lookup|multiply|matrix|dense).{0,45}(?:first|cold)",
+              "first_dense_query",
+              "(?:tiny\\s+)?numpy\\s+query.{0,25}(?:suddenly|reserve)"
+            ]
+          },
+          {
+            "fact": "memory_counter_jump",
+            "label": "A memory counter rises",
+            "any": [
+              "(?:memory|commit|private|resident|working\\s+set).{0,35}(?:jump|grow|increase|barely|leak)",
+              "(?:jump|grow|increase|reserve).{0,35}(?:memory|commit|private|resident|working\\s+set|\\b32\\s*m(?:i?b|eg))"
+            ]
+          }
+        ],
+        "required_fact_groups": [
+          [
+            "first_dense_query"
+          ],
+          [
+            "memory_counter_jump"
+          ]
+        ],
+        "contradictions": [],
+        "clarification": "Did the change occur on the first matrix-vector query, and which counter rose: private/commit, working set, or explicit array bytes?"
+      },
+      "provenance_class": "sanitized_historical_incident",
+      "public_source_note": "Selected public-safe excerpts only; the original private report is not served by this app."
+    },
+    {
+      "id": "extraction_ram_preflight",
+      "title": "Extraction stopped before loading the model because RAM headroom was low",
+      "search_text": "resident extraction RAM preflight 1536 MiB available memory threshold refused before model load no measurements retry headroom recovered",
+      "environment": {
+        "os": "Windows",
+        "component": "Resident model-state extraction",
+        "required_facts": [
+          "Failure is the RAM preflight",
+          "Available RAM is below the declared 1536 MiB threshold"
+        ]
+      },
+      "stage": "extraction_ram_preflight",
+      "status": "resolved_in_recorded_environment",
+      "observations": [
+        "The first extraction attempt refused available RAM below its 1536 MiB preflight before loading the model.",
+        "The second extraction passed after headroom recovered.",
+        "The failed preflight produced no model or replay measurements."
+      ],
+      "failed_attempts": [
+        {
+          "action": "Start extraction while available RAM is below the declared preflight threshold",
+          "outcome": "Preflight refused the run before model loading",
+          "source_ids": [
+            "c4_ram_preflight"
+          ]
+        }
+      ],
+      "next_step": "Re-check available RAM and resume the same bounded extraction only after the declared headroom is available. Preserve the failed preflight separately from completed model measurements.",
+      "limits": [
+        "The record does not identify a specific application to close or establish a universal RAM requirement.",
+        "Do not silently lower the preflight threshold or count the refused attempt as a completed model run."
+      ],
+      "sources": [
+        {
+          "id": "c4_ram_preflight",
+          "document": "MANAGER_REPORT_CYCLE4.md",
+          "section": "Identities, validation and failure history",
+          "excerpt": "Its first attempt refused current RAM below the 1,536 MiB preflight before model loading. The second extraction passed after headroom recovered.",
+          "excerpt_type": "two_noncontiguous_sentences"
+        }
+      ],
+      "demo_queries": [
+        "My extraction stops immediately because it cannot meet the RAM preflight.",
+        "The model never loaded. Available memory was below the 1536 MiB guard."
+      ],
+      "applicability": {
+        "stage_aliases": [
+          "extraction_ram_preflight",
+          "ram\\s+preflight",
+          "(?:available\\s+memory|headroom).{0,45}(?:1536|1,536|guard|threshold)"
+        ],
+        "signals": [
+          {
+            "fact": "ram_preflight_failed",
+            "label": "The RAM preflight refused the run before loading",
+            "any": [
+              "(?:ram|memory)\\s+preflight",
+              "(?:memory|ram|headroom).{0,45}(?:below|insufficient|guard|threshold)",
+              "(?:below|insufficient).{0,35}(?:memory|ram|headroom)",
+              "extraction_ram_preflight"
+            ]
+          }
+        ],
+        "required_fact_groups": [
+          [
+            "ram_preflight_failed"
+          ]
+        ],
+        "contradictions": [],
+        "clarification": "Was extraction refused at its available-RAM preflight before the model loaded, and is current headroom below the declared threshold?"
+      },
+      "provenance_class": "sanitized_historical_incident",
+      "public_source_note": "Selected public-safe excerpts only; the original private report is not served by this app."
+    }
+  ],
+  "synthetic_teaching_example": {
+    "id": "synthetic_dev_server_port_mismatch",
+    "title": "Fictional teaching example: browser points to yesterday's dev-server port",
+    "is_synthetic": true,
+    "required_label": "Fictional example — user-reported outcome, not a measured project incident",
+    "search_text": "browser connection refused localhost dev server started different port terminal ready URL old bookmark wrong port",
+    "environment": {
+      "os": "Any",
+      "component": "Local web development server",
+      "required_facts": [
+        "Terminal reports server ready on a different port from the browser URL"
+      ]
+    },
+    "stage": "browser_connect",
+    "status": "synthetic_user_reported_resolved",
+    "observations": [
+      "Fictional input: the browser opens localhost:3000, while the terminal reports Ready at localhost:3001.",
+      "Fictional outcome: opening the terminal's reported URL loads the page."
+    ],
+    "failed_attempts": [
+      {
+        "action": "Refresh the old localhost:3000 browser tab",
+        "outcome": "Still connection refused in this fictional example",
+        "source_ids": [
+          "synthetic_user_note"
+        ]
+      }
+    ],
+    "next_step": "Compare the browser URL with the server's actual Ready URL. If the ports differ, open the URL the running server reports.",
+    "limits": [
+      "This teaching example is invented and must not appear among verified experiment results.",
+      "Do not infer a port mismatch unless the current server URL or port is known.",
+      "No process-killing command is required for this example."
+    ],
+    "sources": [
+      {
+        "id": "synthetic_user_note",
+        "document": "Fictional teaching card",
+        "section": "Demonstration only",
+        "excerpt": "I kept refreshing port 3000. My terminal said the server was ready on port 3001. Opening port 3001 worked.",
+        "excerpt_type": "fictional_note"
+      }
+    ],
+    "demo_queries": [
+      "My server says it is running, but an old browser tab refuses the connection.",
+      "I started the site on a new port and the bookmark no longer opens it."
+    ],
+    "teaching_flow": "Do not preload this as a real incident. Let the demonstrator add this visibly fictional resolved-memory card, then paraphrase the problem and show its retrieval.",
+    "applicability": {
+      "stage_aliases": [
+        "browser_connect",
+        "(?:browser|bookmark|tab).{0,45}(?:connection|connect|port)"
+      ],
+      "signals": [
+        {
+          "fact": "server_ready",
+          "label": "The development server reports ready",
+          "any": [
+            "(?:server|terminal|backend).{0,35}(?:ready|running|healthy)"
+          ]
+        },
+        {
+          "fact": "known_port_mismatch",
+          "label": "The reported server port differs from the browser",
+          "any": [
+            "(?:different|new|wrong|old).{0,25}port",
+            "3000.{0,35}3001",
+            "3001.{0,35}3000"
+          ]
+        }
+      ],
+      "required_fact_groups": [
+        [
+          "server_ready"
+        ],
+        [
+          "known_port_mismatch"
+        ]
+      ],
+      "contradictions": [],
+      "clarification": "What Ready URL does the server report, and does its port differ from the browser URL?"
+    }
+  },
+  "status_labels": {
+    "resolved_in_recorded_environment": "Resolved in recorded environment",
+    "diagnosed": "Diagnosed",
+    "partially_resolved": "Partially resolved",
+    "unresolved": "Unresolved",
+    "synthetic_user_reported_resolved": "User reported - fictional example",
+    "user_reported": "User reported"
+  }
+}
